@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import FileUpload from '../../components/commons/FileUpload';
 import { Button, Slider, TextField } from '@mui/material';
+import * as API from '../../api/index';
 
 const marks = [
   {
@@ -16,9 +17,53 @@ const marks = [
 
 export default function GroupWritePage() {
   const [sliderValue, setSliderValue] = useState(0);
+  const [groupTitle, setGroupTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const [titleError, setTitleError] = useState(false);
+  const [descriptionError, setDescriptionError] = useState(false);
+
+  console.log(groupTitle, description);
 
   const onChangeSliderValue = value => {
     setSliderValue(value);
+  };
+
+  const onChangeInput = e => {
+    const { name, value } = e.target;
+
+    if (name === 'groupTitle') {
+      if (value === '') {
+        setTitleError(true);
+      } else {
+        setTitleError(false);
+      }
+      setGroupTitle(value);
+    }
+    if (name === 'description') {
+      if (value === '') {
+        setDescriptionError(true);
+      } else {
+        setDescriptionError(false);
+      }
+      setDescription(value);
+    }
+  };
+
+  const onClickAddGroup = async () => {
+    try {
+      // if (!groupTitle) alert('그룹명을 입력해주세요.');
+      // if (!description) alert('상세내용을 입력해주세요.');
+      // if (!sliderValue > 0) alert('모집인원은 최소1명 이상 가능합니다.');
+      const data = {
+        name: groupTitle,
+        내용: description,
+        모집인원: sliderValue,
+      };
+      await API.post('groups', data);
+      alert('성공');
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   return (
@@ -30,7 +75,15 @@ export default function GroupWritePage() {
             <FileUpload />
           </FileContainer>
           <InputBox>
-            <TextField id="outlined-basic" label="그룹 명" variant="outlined" />
+            <TextField
+              id="outlined-basic"
+              label="그룹 명"
+              variant="outlined"
+              name="groupTitle"
+              onChange={onChangeInput}
+              error={titleError}
+              helperText={titleError && '그룹명을 입력해주세요.'}
+            />
           </InputBox>
           <SliderBox>
             <Slider
@@ -48,11 +101,20 @@ export default function GroupWritePage() {
               id="outlined-textarea"
               label="그룹 상세내용"
               placeholder="상세내용을 입력해주세요."
+              name="description"
+              onChange={onChangeInput}
               multiline
+              error={descriptionError}
+              helperText={descriptionError && '상세내용을 입력해주세요.'}
             />
           </InputBox>
           <BtnBox>
-            <Button variant="contained" color="success">
+            <Button
+              variant="contained"
+              color="success"
+              disabled={titleError === true || descriptionError === true || sliderValue === 0}
+              onClick={onClickAddGroup}
+            >
               등록
             </Button>
             <Button variant="outlined" color="success">
