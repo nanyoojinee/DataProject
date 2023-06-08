@@ -6,9 +6,13 @@ class GroupJoin {
     return createdNewGroupJoin;
   }
 
-
   static async findById({ groupId }) {
-    const group = await GroupJoinModel.findOne({ id: groupId });
+    const group = await GroupJoinModel.findOne({ groupId });
+    return group;
+  }
+
+  static async findByUserId({ userId }) {
+    const group = await GroupJoinModel.findOne({ userId });
     return group;
   }
 

@@ -2,6 +2,10 @@ import { Schema, model } from 'mongoose';
 
 const GroupSchema = new Schema(
   {
+    id: {
+      type: String,
+      required: true,
+    },
     groupOwner: {
       type: String,
       required: true,
@@ -21,7 +25,7 @@ const GroupSchema = new Schema(
     members: {
       type: Schema.Types.ObjectId,
       ref: 'groupJoin',
-      required:false,
+      required: false,
     },
     thumbnail: { type: String },
   },

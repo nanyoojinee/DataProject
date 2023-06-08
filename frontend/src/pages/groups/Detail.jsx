@@ -3,8 +3,23 @@ import React from 'react';
 import styled from 'styled-components';
 import MemberProfileBox from '../../components/commons/box/MemberProfileBox';
 import GroupCalendar from '../../components/groups/details/Calendar';
+import { useParams } from 'react-router-dom';
+import * as API from '../../api/index';
 
 export default function GroupDetailPage() {
+  const groupId = useParams().id;
+
+  console.log(groupId);
+
+  const handleGroupJoin = async () => {
+    try {
+      await API.post(`/groups/${groupId}/join`);
+      alert('성공');
+    } catch (err) {
+      alert(err);
+    }
+  };
+
   return (
     <GroupDetailWrap>
       <GroupDetailContainer>
@@ -36,6 +51,7 @@ export default function GroupDetailPage() {
                 style={{ width: '180px', height: '40px', fontSize: '2.2rem' }}
                 variant="contained"
                 color="success"
+                onClick={handleGroupJoin}
               >
                 그룹신청
               </Button>

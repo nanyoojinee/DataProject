@@ -14,7 +14,7 @@ export default function ListBox({ group }) {
         <ListContent>
           <TitleBox>
             <ListTitle>{group.title}</ListTitle>
-            <ListDate>{group.createdAt.slice(0, 10)}</ListDate>
+            <ListDate>{group.createdAt}</ListDate>
           </TitleBox>
           <ListMemberBox>
             <AvatarGroup max={4}>
