@@ -10,6 +10,11 @@ class Group {
     const group = await GroupModel.findOne({ id: groupId });
     return group;
   }
+//나의 그룹 상세조회
+  static async findOne( groupId ) {
+    const mygroup = await GroupModel.find({ _id: groupId }).populate('groupJoin');
+    return mygroup;
+  }
 
   static async findAll() {
     const groupAllInfo = await GroupModel.find({});

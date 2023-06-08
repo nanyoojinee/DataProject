@@ -3,20 +3,18 @@ import { Schema, model } from 'mongoose';
 const GroupJoinSchema = new Schema(
   {
     groupId: {
-      type: String,
+      type: Schema.Types.ObjectId, 
+      ref: 'Group',
       required: true,
     },
     userId: {
-      type: String,
+      type: Schema.Types.ObjectId,
+      ref: 'User',
       required: true,
     },
     state: {
       type: String,
       required: true,
-    },
-    members: {
-      type: String,
-      required: false,
     },
   },
   {

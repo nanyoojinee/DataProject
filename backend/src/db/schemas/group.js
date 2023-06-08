@@ -15,14 +15,18 @@ const GroupSchema = new Schema(
       type: String,
       required: true,
     },
+    totalNumOfMembers: {
+      type: Number,
+      required: true,
+    },
     members: {
-      type: String,
-      required: false,
+      type: Schema.Types.ObjectId,
+      ref: 'groupJoin',
+      required:false,
     },
-    thumbnail: {
-      path: { type: String },
-    },
+    thumbnail: { type: String },
   },
+  { strictPopulate: false },
   {
     timestamps: true,
   },

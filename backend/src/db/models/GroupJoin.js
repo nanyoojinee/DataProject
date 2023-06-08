@@ -6,30 +6,30 @@ class GroupJoin {
     return createdNewGroupJoin;
   }
 
-  //작업중....
-  // static async findById({ groupId }) {
-  //   const group = await GroupJoinModel.findOne({ id: groupId });
-  //   return group;
-  // }
 
-  // static async findAll() {
-  //   const groupAllInfo = await GroupJoinModel.find({});
-  //   return groupAllInfo;
-  // }
+  static async findById({ groupId }) {
+    const group = await GroupJoinModel.findOne({ id: groupId });
+    return group;
+  }
 
-  // static async update({ groupId, fieldToUpdate, newValue }) {
-  //   const filter = { id: groupId };
-  //   const update = { [fieldToUpdate]: newValue };
-  //   const option = { returnOriginal: false };
+  static async findAll() {
+    const groupAllInfo = await GroupJoinModel.find({});
+    return groupAllInfo;
+  }
 
-  //   const updatedGroup = await GroupJoinModel.findOneAndUpdate(filter, update, option);
-  //   return updatedGroup;
-  // }
+  static async update({ groupId, fieldToUpdate, newValue }) {
+    const filter = { id: groupId };
+    const update = { [fieldToUpdate]: newValue };
+    const option = { returnOriginal: false };
 
-  // static async delete(groupId) {
-  //   const deletedGroup = await GroupJoinModel.deleteOne(groupId);
-  //   return deletedGroup;
-  // }
+    const updatedGroup = await GroupJoinModel.findOneAndUpdate(filter, update, option);
+    return updatedGroup;
+  }
+
+  static async delete(groupId) {
+    const deletedGroup = await GroupJoinModel.deleteOne(groupId);
+    return deletedGroup;
+  }
 }
 
 export { GroupJoin };
