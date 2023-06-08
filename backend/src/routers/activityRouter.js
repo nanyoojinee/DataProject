@@ -4,12 +4,13 @@ import { upload } from '../middlewares/imageUploadMiddleware.js';
 import { loginRequired } from '../middlewares/loginRequired.js';
 
 const activityRouter = Router();
+const imgupload = upload.single('image');
 
 /** 내 활동 추가 */
-activityRouter.post('/activities/:userId', loginRequired, imgupload, async (req, res, next) => {
+activityRouter.post('/activities', imgupload, async (req, res, next) => {
   try {
     const userId = req.currentUserId;
-    const { name, groupId, userDate, state, actCategoryId } = req.body;
+    const { name, groupId, usedDate, state, actCategoryId } = req.body;
 
     const newActivity = await activityService.addActivity({
       userId,
@@ -18,10 +19,9 @@ activityRouter.post('/activities/:userId', loginRequired, imgupload, async (req,
       usedDate,
       state,
       actCategoryId,
-      proofImg,
     });
 
-    if (newActivity.errorMessage) {
+    if (newActivity && newActivity.errorMessage) {
       throw new Error(newActivity.errorMessage);
     }
     res.status(201).json({ newActivity });
@@ -47,7 +47,7 @@ activityRouter.get('/myActivities/:userId', loginRequired, async (req, res) => {
       proofImg,
     });
 
-    if (allActivities.errorMessege) {
+    if (allActivities && allActivities.errorMessage) {
       throw new Error(allActivities.errorMessage);
     }
     res.status(200).json({ allActivities });
@@ -55,26 +55,26 @@ activityRouter.get('/myActivities/:userId', loginRequired, async (req, res) => {
   } catch (error) {
     next(error);
   }
-})
+});
 
-  /** 내 활동 삭제 */
-  activityRouter.delete('/deletedata/:userId', loginRequired, async (req, res) => {
-    try {
-      const userId = req.currentUserId;
+/** 내 활동 삭제 */
+activityRouter.delete('/deletedata/:userId', loginRequired, async (req, res) => {
+  try {
+    const userId = req.currentUserId;
 
-      const deleteActivity = await activityService.removeActivity({
-        userId,
-      });
+    const deleteActivity = await activityService.removeActivity({
+      userId,
+    });
 
-      if (deleteActivity.errorMessage) {
-        throw new Error(deleteActivity.errorMessage);
-      }
-      res.status(200).json('deleteActivity');
-      return;
-    } catch (error) {
-      next(error);
+    if (deleteActivity && deleteActivity.errorMessage) {
+      throw new Error(deleteActivity.errorMessage);
     }
-  });
+    res.status(200).json('deleteActivity');
+    return;
+  } catch (error) {
+    next(error);
+  }
+});
 
 //활동 관련기능
 export { activityRouter };
