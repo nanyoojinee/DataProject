@@ -48,12 +48,6 @@ activityRouter.post(
 
     res.status(201).json('data');
   }),
-);
-
-//Update
-activityRouter.put('/putdata', async (req, res) => {
-  res.status(200).json('data');
-});
 
 //Delete
 activityRouter.delete(
@@ -61,10 +55,8 @@ activityRouter.delete(
   loginRequired,
   asyncHandler(async (req, res) => {
     const userId = req.currentUserId;
-    const _Id = req.params._id;
 
     const deleteActivity = await activityService.removeActivity({
-      _id,
       userId,
     });
 
