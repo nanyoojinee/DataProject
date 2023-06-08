@@ -145,7 +145,9 @@ class userAuthService {
       return { errorMessage };
     }
 
-    return user;
+    const actCount = { thumbler: 1, multipleContainer: 1 };
+
+    return { user, actCount };
   }
 }
 
