@@ -5,8 +5,6 @@ import { loginRequired } from '../middlewares/loginRequired.js';
 
 const activityRouter = Router();
 
-const imgupload = upload.single('thumbnail');
-
 /** 내 활동 추가 */
 activityRouter.post('/activities/:userId', loginRequired, imgupload, async (req, res, next) => {
   try {
@@ -17,12 +15,10 @@ activityRouter.post('/activities/:userId', loginRequired, imgupload, async (req,
       userId,
       groupId,
       name,
-      userDate,
+      usedDate,
       state,
       actCategoryId,
       proofImg,
-      thumbler,
-      multipleContainer,
     });
 
     if (newActivity.errorMessage) {
@@ -36,11 +32,10 @@ activityRouter.post('/activities/:userId', loginRequired, imgupload, async (req,
 });
 
 /** 내 활동 목록 조회 */
-activityRouter.get('/myActivities', loginRequired, async (req, res) => {
+activityRouter.get('/myActivities/:userId', loginRequired, async (req, res) => {
   try {
     const userId = req.currentUserId;
-    const { groupId, state, name, usedDate, actCategoryId, proofImg, thumbler, multipleContainer } =
-      req.body;
+    const { groupId, state, name, usedDate, actCategoryId, proofImg } = req.body;
 
     const allActivities = await activityService.getAllActivity({
       userId,
@@ -50,8 +45,6 @@ activityRouter.get('/myActivities', loginRequired, async (req, res) => {
       usedDate,
       actCategoryId,
       proofImg,
-      thumbler,
-      multipleContainer,
     });
 
     if (allActivities.errorMessege) {
@@ -62,7 +55,8 @@ activityRouter.get('/myActivities', loginRequired, async (req, res) => {
   } catch (error) {
     next(error);
   }
-}),
+})
+
   /** 내 활동 삭제 */
   activityRouter.delete('/deletedata/:userId', loginRequired, async (req, res) => {
     try {

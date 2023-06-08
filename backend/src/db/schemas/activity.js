@@ -26,8 +26,7 @@ const ActivitySchema = new Schema(
       type: String,
       require: true,
     },
-
-    profileImg: {
+    proofImg: {
       type: String,
       require: true,
     },
