@@ -1,72 +1,86 @@
 import { Router } from 'express';
 import { activityService } from '../services/activityService.js';
-import asyncHandler from '../utils/asyncHandler.js';
-import { validateValue } from '../utils/validate.js';
+import { upload } from '../middlewares/imageUploadMiddleware.js';
 import { loginRequired } from '../middlewares/loginRequired.js';
 
 const activityRouter = Router();
 
-//Read
-activityRouter.get(
-  '/getdata',
-  loginRequired,
-  asyncHandler(async (req, res) => {
-    const userId = req.params.userId;
-    const allActivitys = await activityService.getAllActivity({
-      userId,
-    });
-    if (allActivitys.errorMessege) {
-      throw new Error(allActivitys.errorMessage);
-    }
+const imgupload = upload.single('thumbnail');
 
-    res.status(200).json('data');
-  }),
-);
-
-//Create
-activityRouter.post(
-  '/postdata',
-  loginRequired,
-  asyncHandler(async (req, res) => {
+/** 내 활동 추가 */
+activityRouter.post('/activities/:userId', loginRequired, imgupload, async (req, res, next) => {
+  try {
     const userId = req.currentUserId;
     const { name, groupId, userDate, state, actCategoryId } = req.body;
 
-    const activity = {
+    const newActivity = await activityService.addActivity({
       userId,
       groupId,
       name,
       userDate,
       state,
       actCategoryId,
-    };
-
-    validateValue(activity);
-
-    const addNewActivity = await activityService.addActivity({
-      activity,
+      proofImg,
+      thumbler,
+      multipleContainer,
     });
 
-    res.status(201).json('data');
-  }),
-
-//Delete
-activityRouter.delete(
-  '/deletedata/:_id',
-  loginRequired,
-  asyncHandler(async (req, res) => {
-    const userId = req.currentUserId;
-
-    const deleteActivity = await activityService.removeActivity({
-      userId,
-    });
-
-    if (deleteActivity.errorMessage) {
-      throw new Error(deleteActivity.errorMessage);
+    if (newActivity.errorMessage) {
+      throw new Error(newActivity.errorMessage);
     }
+    res.status(201).json({ newActivity });
+    return;
+  } catch (error) {
+    next(error);
+  }
+});
 
-    res.status(200).json('data');
-  }),
-);
+/** 내 활동 목록 조회 */
+activityRouter.get('/myActivities', loginRequired, async (req, res) => {
+  try {
+    const userId = req.currentUserId;
+    const { groupId, state, name, usedDate, actCategoryId, proofImg, thumbler, multipleContainer } =
+      req.body;
+
+    const allActivities = await activityService.getAllActivity({
+      userId,
+      groupId,
+      state,
+      name,
+      usedDate,
+      actCategoryId,
+      proofImg,
+      thumbler,
+      multipleContainer,
+    });
+
+    if (allActivities.errorMessege) {
+      throw new Error(allActivities.errorMessage);
+    }
+    res.status(200).json({ allActivities });
+    return;
+  } catch (error) {
+    next(error);
+  }
+}),
+  /** 내 활동 삭제 */
+  activityRouter.delete('/deletedata/:userId', loginRequired, async (req, res) => {
+    try {
+      const userId = req.currentUserId;
+
+      const deleteActivity = await activityService.removeActivity({
+        userId,
+      });
+
+      if (deleteActivity.errorMessage) {
+        throw new Error(deleteActivity.errorMessage);
+      }
+      res.status(200).json('deleteActivity');
+      return;
+    } catch (error) {
+      next(error);
+    }
+  });
 
 //활동 관련기능
 export { activityRouter };

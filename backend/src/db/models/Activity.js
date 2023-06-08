@@ -11,6 +11,7 @@ class Activity {
     return activity;
   }
 
+  //내 활동 조회
   static async findByUserId({ userId }) {
     const activity = await ActivityModel.find({ userId });
     return activity;
