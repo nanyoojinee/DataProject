@@ -1,9 +1,19 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { ROUTE } from '../../constants/routes/routeData';
+import { useRecoilState } from 'recoil';
+import { userTokenState } from '../../stores';
 
 export default function Header() {
+  const [userToken, setUserToken] = useRecoilState(userTokenState);
+
+  useEffect(() => {
+    if (sessionStorage.getItem('userToken')) {
+      setUserToken(sessionStorage.getItem('userToken'));
+    }
+  });
+
   return (
     <HeaderWrap>
       <HeaderContainer>
@@ -29,21 +39,33 @@ export default function Header() {
             </NavMenu>
           </Navigation>
           <SubMenu>
-            <SubMenuList>
-              <SubMenuBtn btn={'stroke'}>
-                <Link to={'/login'}>LOGIN</Link>
-              </SubMenuBtn>
-            </SubMenuList>
-            <SubMenuList>
-              <SubMenuBtn>
-                <Link to={'/join'}>JOIN</Link>
-              </SubMenuBtn>
-            </SubMenuList>
-            <SubMenuList>
-              <SubMenuBtn>
-                <Link to={ROUTE.PAGE_GROUP.link}>MYPAGE</Link>
-              </SubMenuBtn>
-            </SubMenuList>
+            {!userToken ? (
+              <>
+                <SubMenuList>
+                  <SubMenuBtn btn={'stroke'}>
+                    <Link to={ROUTE.LOGIN.link}>LOGIN</Link>
+                  </SubMenuBtn>
+                </SubMenuList>
+                <SubMenuList>
+                  <SubMenuBtn>
+                    <Link to={ROUTE.JOIN.link}>JOIN</Link>
+                  </SubMenuBtn>
+                </SubMenuList>
+              </>
+            ) : (
+              <>
+                <SubMenuList>
+                  <SubMenuBtn>
+                    <Link>로그아웃</Link>
+                  </SubMenuBtn>
+                </SubMenuList>
+                <SubMenuList>
+                  <SubMenuBtn>
+                    <Link to={ROUTE.PAGE_GROUP.link}>MYPAGE</Link>
+                  </SubMenuBtn>
+                </SubMenuList>
+              </>
+            )}
           </SubMenu>
         </NavigationBox>
       </HeaderContainer>
@@ -125,4 +147,4 @@ const SubMenuBtn = styled.button`
     font-weight: 600;
     color: ${({ btn }) => (btn === 'stroke' ? '#01881c' : '#fff')};
   }
-`; 
+`;

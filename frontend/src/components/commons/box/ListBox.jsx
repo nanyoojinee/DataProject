@@ -5,15 +5,16 @@ import Avatar from '@mui/material/Avatar';
 import AvatarGroup from '@mui/material/AvatarGroup';
 import { ROUTE } from '../../../constants/routes/routeData';
 
-export default function ListBox() {
+export default function ListBox({ group }) {
+  console.log(group);
   return (
     <ListBoxWrap>
-      <Link to={`${ROUTE.GROUP_DETAIL.link}/${'groupId'}`}>
-        <ListBackImg img="/images/groups/lists/thumnail.png" />
+      <Link to={`${ROUTE.GROUP_DETAIL.link}/${group._id}`}>
+        <ListBackImg img={`http://localhost:5001/uploads/${group.thumbnail}`} />
         <ListContent>
           <TitleBox>
-            <ListTitle>3학년 1반 그룹</ListTitle>
-            <ListDate>2023.01.01</ListDate>
+            <ListTitle>{group.title}</ListTitle>
+            <ListDate>{group.createdAt.slice(0, 10)}</ListDate>
           </TitleBox>
           <ListMemberBox>
             <AvatarGroup max={4}>
@@ -48,7 +49,7 @@ export default function ListBox() {
                 sx={{ width: 30, height: 30 }}
               />
             </AvatarGroup>
-            <MemberNum>모집인원 13 / 15</MemberNum>
+            <MemberNum>모집인원 13 / {group.totalNumOfMembers}</MemberNum>
           </ListMemberBox>
         </ListContent>
       </Link>
@@ -69,6 +70,7 @@ const ListBackImg = styled.div`
   background-image: ${({ img }) => `url(${img})`};
   background-repeat: no-repeat;
   background-size: cover;
+  background-position: center;
 `;
 
 const ListContent = styled.div`

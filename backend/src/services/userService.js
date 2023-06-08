@@ -4,7 +4,16 @@ import { v4 as uuidv4 } from 'uuid';
 import jwt from 'jsonwebtoken';
 
 class userAuthService {
-  static async addUser({ userId, password, name, nickname, phone, address, addressDetail }) {
+  static async addUser({
+    userId,
+    password,
+    name,
+    nickname,
+    phone,
+    address,
+    addressDetail,
+    profileImg,
+  }) {
     const user = await User.findByUserId({ userId });
     if (user) {
       const errorMessage = '이 아이디는 현재 사용중입니다. 다른 아이디를 입력해 주세요.';
@@ -23,6 +32,7 @@ class userAuthService {
       phone,
       address,
       addressDetail,
+      profileImg,
     };
 
     return User.create({ newUser });

@@ -5,16 +5,18 @@ import { userAuthService } from '../services/userService.js';
 import { upload } from '../middlewares/imageUploadMiddleware.js';
 
 const userAuthRouter = Router();
-const imgupload = upload.single('image');
+const imgUpload = upload.single('profileImg');
 
-userAuthRouter.post('/users', imgupload, async (req, res, next) => {
+userAuthRouter.post('/users', imgUpload, async (req, res, next) => {
   try {
     if (is.emptyObject(req.body)) {
       throw new Error('headers의 Content-Type을 "multipart/form-data"로 설정해주세요');
     }
 
     // req (request) 에서 데이터 가져오기
-    const { userId, password, name, nickname, phone, address, addressDetail } = req.body;
+
+    const { userId, password, name, nickname, phone, address, addressDetail, profileImage } =
+      req.body;
 
     const newUser = await userAuthService.addUser({
       userId,
@@ -24,7 +26,7 @@ userAuthRouter.post('/users', imgupload, async (req, res, next) => {
       phone,
       address,
       addressDetail,
-      // profileImage,
+      profileImg: req.file ? req.file.filename : '',
     });
 
     if (newUser.errorMessage) {
@@ -93,9 +95,18 @@ userAuthRouter.put('/users/:id', loginRequired, async (req, res, next) => {
     const phone = req.body.phone ?? null;
     const address = req.body.address ?? null;
     const addressDetail = req.body.addressDetail ?? null;
-    // const profileImage = req.body.profileImage ?? null;
+    const profileImage = req.body.profileImage ?? null;
 
-    const toUpdate = { userId, password, name, nickname, phone, address, addressDetail };
+    const toUpdate = {
+      userId,
+      password,
+      name,
+      nickname,
+      phone,
+      address,
+      addressDetail,
+      profileImage,
+    };
 
     // 해당 사용자 아이디로 사용자 정보를 db에서 찾아 업데이트함. 업데이트 요소가 없을 시 생략함
     const updatedUser = await userAuthService.setUser({ loginedId, toUpdate });

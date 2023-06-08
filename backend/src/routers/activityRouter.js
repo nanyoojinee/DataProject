@@ -1,8 +1,8 @@
 import { Router } from 'express';
-import { loginRequired } from '../middlewares/loginRequired';
-import activityService from '../services/activityService';
-import asyncHandler from '../utils/asyncHandler';
-import { validateValue } from '../utils/validate';
+import { activityService } from '../services/activityService.js';
+import asyncHandler from '../utils/asyncHandler.js';
+import { validateValue } from '../utils/validate.js';
+import { loginRequired } from '../middlewares/loginRequired.js';
 
 const activityRouter = Router();
 
@@ -10,7 +10,7 @@ const activityRouter = Router();
 activityRouter.get(
   '/getdata',
   loginRequired,
-  asyncHadler(async (req, res) => {
+  asyncHandler(async (req, res) => {
     const userId = req.params.userId;
     const allActivitys = await activityService.getAllActivity({
       userId,

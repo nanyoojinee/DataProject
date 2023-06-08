@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import RankProfile from '../../components/groups/lists/RankProfile';
 import Search from '../../components/groups/lists/Search';
@@ -7,8 +7,19 @@ import ListBox from '../../components/commons/box/ListBox';
 import SubTitle from '../../components/commons/title/SubTitle';
 import { Link } from 'react-router-dom';
 import { ROUTE } from '../../constants/routes/routeData';
+import * as Api from '../../api/index';
 
 export default function GroupList() {
+  const [groupList, setGroupList] = useState([]);
+
+  useEffect(() => {
+    const getGroups = async () => {
+      const result = await Api.get('/groups');
+      setGroupList(result.data.result);
+    };
+    getGroups();
+  }, []);
+
   return (
     <GroupListWrap>
       <RankingBox>
@@ -28,15 +39,9 @@ export default function GroupList() {
           </Button>
         </SearchContainer>
         <GroupLists>
-          <ListBox />
-          <ListBox />
-          <ListBox />
-          <ListBox />
-          <ListBox />
-          <ListBox />
-          <ListBox />
-          <ListBox />
-          <ListBox />
+          {groupList?.map(group => (
+            <ListBox key={group.id} group={group} />
+          ))}
         </GroupLists>
         <PagenationBox>
           <Pagination count={5} size="large" />

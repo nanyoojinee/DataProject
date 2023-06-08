@@ -7,6 +7,8 @@ import { groupJoinRouter } from './routers/groupJoinRouter.js';
 
 import { activityRouter } from './routers/activityRouter.js';
 import { actCategoryRouter } from './routers/actCategoryRouter.js';
+import path from 'path';
+import { dataRouter } from './routers/dataRouter.js';
 
 const app = express();
 
@@ -24,14 +26,25 @@ app.get('/getdata', (req, res) => {
   const jsonPath = path.join(__dirname, 'data', 'output.json');
 
   res.status(200).json(require(jsonPath));
-  console.log('1');
   return;
 });
+
+app.get('/uploads/:filename', (req, res) => {
+  const filename = req.params.filename;
+  const filePath = `uploads/${filename}`;
+  const options = {
+    root: path.join('../backend'),
+  };
+  res.sendFile(filePath, options);
+});
+
 app.use(userAuthRouter);
 app.use(groupRouter);
 app.use(groupJoinRouter);
 app.use(activityRouter);
 app.use(actCategoryRouter);
+app.use(dataRouter);
+
 app.use(errorMiddleware);
 
 export { app };

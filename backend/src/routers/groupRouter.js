@@ -5,7 +5,7 @@ import { loginRequired } from '../middlewares/loginRequired.js';
 
 const groupRouter = Router();
 
-const imgupload = upload.single('image');
+const imgupload = upload.single('thumbnail');
 
 /** 유저의 그룹 생성 추가 ( 그룹장이 되는 유저 ) */
 groupRouter.post('/groups', loginRequired, imgupload, async (req, res, next) => {

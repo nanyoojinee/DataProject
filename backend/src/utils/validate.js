@@ -1,4 +1,4 @@
-import { ActCategory, Activity } from '../db';
+import { ActCategory, Activity } from '../db/index.js';
 
 const validateValue = values => {
   // 값을 프론트로부터 제대로 받았는지 체크하는 기능. 라우터에서 객체를 받아온다.

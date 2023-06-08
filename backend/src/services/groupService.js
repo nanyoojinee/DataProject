@@ -5,7 +5,7 @@ class groupService {
   // create/ post
   static async addGroup({ groupOwner, title, totalNumOfMembers, description, members, thumbnail }) {
     const newGroup = {
-      groupOwner: user.id,
+      groupOwner,
       title,
       totalNumOfMembers,
       description,

@@ -14,10 +14,7 @@ const storage = multer.diskStorage({
     cb(null, 'uploads');
   },
   filename: (req, file, cb) => {
-    const ext = path.extname(file.originalname);
-    const filename = path.basename(file.originalname, ext) + Date.now() + ext;
-    console.log(path.basename(file.originalname, ext));
-    cb(null, filename);
+    cb(null, new Date().valueOf() + path.extname(file.originalname));
   },
 });
 const limits = { fieldsize: 10 * 1024 * 1024 };

@@ -38,8 +38,8 @@ const userSchema = new Schema(
     groupId: {
       type: String,
     },
-    profileImage: {
-      path: { type: String },
+    profileImg: {
+      type: String,
     },
   },
   {

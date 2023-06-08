@@ -11,15 +11,59 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import * as API from '../../api/index';
+import { useRecoilState } from 'recoil';
+import { userTokenState } from '../../stores';
 
 export default function LoginPage() {
+  const [, setUserToken] = useRecoilState(userTokenState);
+
   const [showPassword, setShowPassword] = useState(false);
+  const [userId, setUserId] = useState('');
+  const [password, setPassword] = useState('');
+
+  const navigate = useNavigate();
+
+  const onChangeInput = e => {
+    const { name, value } = e.target;
+
+    if (name === 'userId') {
+      setUserId(value);
+    }
+
+    if (name === 'password') {
+      setPassword(value);
+    }
+
+    console.log(userId, password);
+  };
 
   const handleClickShowPassword = () => setShowPassword(show => !show);
 
   const handleMouseDownPassword = event => {
     event.preventDefault();
+  };
+
+  const handleSubmitLogin = async e => {
+    e.preventDefault();
+
+    try {
+      const data = {
+        userId,
+        password,
+      };
+
+      const result = await API.post('/login', data);
+
+      const userToken = result.data.token;
+      sessionStorage.setItem('userToken', userToken);
+      setUserToken(userToken);
+      alert('로그인 성공');
+      navigate('/');
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   return (
@@ -30,7 +74,12 @@ export default function LoginPage() {
         </LoginLogoBox>
         <LoginForm>
           <InputBox>
-            <TextField label="ID" id="outlined-start-adornment" />
+            <TextField
+              label="ID"
+              id="outlined-start-adornment"
+              name="userId"
+              onChange={onChangeInput}
+            />
           </InputBox>
           <InputBox>
             <FormControl sx={{ m: 1, width: '25ch' }} variant="outlined">
@@ -51,13 +100,15 @@ export default function LoginPage() {
                   </InputAdornment>
                 }
                 label="Password"
+                name="password"
+                onChange={onChangeInput}
               />
             </FormControl>
           </InputBox>
           <FindBox>
             <Link>ID / PW 찾기</Link>
           </FindBox>
-          <Button variant="contained" color="success">
+          <Button variant="contained" color="success" onClick={handleSubmitLogin}>
             로그인
           </Button>
           <JoinLink>

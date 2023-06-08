@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import * as S from './main.styles';
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
+import * as Api from '../../api/index';
 import {
   LineChart,
   Line,
@@ -26,28 +27,40 @@ const settings = {
   pauseOnHover: false,
 };
 
-const data = [
-  {
-    name: 'Page A',
-    uv: 4000,
-    pv: 2400,
-    amt: 2400,
-  },
-  {
-    name: 'Page B',
-    uv: 1500,
-    pv: 1200,
-    amt: 2400,
-  },
-  {
-    name: 'Page C',
-    uv: 7000,
-    pv: 6500,
-    amt: 3300,
-  },
-];
+// const data = [
+//   {
+//     name: 'Page A',
+//     uv: 4000,
+//     pv: 2400,
+//     amt: 2400,
+//   },
+//   {
+//     name: 'Page B',
+//     uv: 1500,
+//     pv: 1200,
+//     amt: 2400,
+//   },
+//   {
+//     name: 'Page C',
+//     uv: 7000,
+//     pv: 6500,
+//     amt: 3300,
+//   },
+// ];
 
 export default function MainA() {
+  const [plasticData, setPlasticData] = useState([]);
+
+  useEffect(() => {
+    const getPlasticData = async () => {
+      const result = await Api.get('/plasticData');
+      setPlasticData(JSON.parse(result.data.data));
+    };
+    getPlasticData();
+  }, []);
+
+  console.log(plasticData);
+
   return (
     <S.MainWrap02>
       <S.MainContainer>
@@ -66,7 +79,7 @@ export default function MainA() {
                 <LineChart
                   width={380}
                   height={300}
-                  data={data}
+                  data={plasticData}
                   margin={{
                     top: 5,
                     right: 20,
@@ -95,7 +108,7 @@ export default function MainA() {
                 <BarChart
                   width={380}
                   height={300}
-                  data={data}
+                  data={plasticData}
                   margin={{
                     top: 5,
                     right: 20,

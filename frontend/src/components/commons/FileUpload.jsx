@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from 'react';
+import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
+import { imgFileState } from '../../stores';
 
 export default function FileUpload() {
   const [imageSrc, setImageSrc] = useState(null);
+  const [, setImgFile] = useRecoilState(imgFileState);
 
   useEffect(() => {
     return () => {
@@ -12,6 +15,7 @@ export default function FileUpload() {
 
   const onUpload = e => {
     const file = e.target.files[0];
+    setImgFile(file);
     const reader = new FileReader();
     reader.readAsDataURL(file);
 

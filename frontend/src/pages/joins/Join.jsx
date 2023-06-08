@@ -1,42 +1,52 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import FileUpload from '../../components/commons/FileUpload';
-import {
-  Button,
-  FormControl,
-  IconButton,
-  InputAdornment,
-  InputLabel,
-  OutlinedInput,
-  TextField,
-} from '@mui/material';
-import Visibility from '@mui/icons-material/Visibility';
-import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import { Button, TextField } from '@mui/material';
+
 import SearchIcon from '@mui/icons-material/Search';
 import { Link } from 'react-router-dom';
 import Postcode from '../../components/commons/DaumPostCode';
 import { useRecoilState } from 'recoil';
-import { isPostcodeModalState, postcodeAddressState } from '../../stores';
-import * as Api from '../../api';
-
+import { imgFileState, isPostcodeModalState, postcodeAddressState } from '../../stores';
+import axios from 'axios';
 
 export default function JoinPage() {
   const [isPostcodeModal, setIsPostcodeModal] = useRecoilState(isPostcodeModalState);
   const [postcodeAddress, setPostcodeAddress] = useRecoilState(postcodeAddressState);
+  const [imgFile] = useRecoilState(imgFileState);
 
-  const [showPassword, setShowPassword] = useState(false);
-  const [showPasswordConfirm, setShowPasswordConfirm] = useState(false);
-
-  const [formData, setFormData] = useState({
-    id: '',
+  const [formDatas, setFormData] = useState({
+    userId: '',
     password: '',
     passwordConfirm: '',
     name: '',
     nickname: '',
     phone: '',
-    address: '',
-    detailedAddress: '',
+    addressDetail: '',
   });
+
+  const [formError, setFormError] = useState({
+    userId: false,
+    password: false,
+    passwordConfirm: false,
+    name: false,
+    nickname: false,
+    phone: false,
+  });
+
+  const disabled =
+    formDatas.userId === '' ||
+    formDatas.password === '' ||
+    formDatas.passwordConfirm === '' ||
+    formDatas.name === '' ||
+    formDatas.nickname === '' ||
+    formDatas.phone === '' ||
+    formError.userId === true ||
+    formError.password === true ||
+    formError.passwordConfirm === true ||
+    formError.name === true ||
+    formError.nickname === true ||
+    formError.phone === true;
 
   useEffect(() => {
     return () => {
@@ -44,34 +54,71 @@ export default function JoinPage() {
     };
   }, [setPostcodeAddress]); // Modified line
 
-  const onClicktoggleAddressModal = () => {
-    setIsPostcodeModal((prev) => !prev);
-  };
-
-  const handleClickShowPassword = () => setShowPassword((show) => !show);
-  const handleClickShowPasswordConfirm = () => setShowPasswordConfirm((show) => !show);
-
-  const handleMouseDownPassword = event => {
-    event.preventDefault();
-  };
-  
-  const handleInputChange = (e) => {
+  const handleInputChange = e => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+
+    if (value === '') {
+      setFormError(prev => ({ ...prev, [name]: true }));
+    } else {
+      setFormError(prev => ({ ...prev, [name]: false }));
+    }
+
+    const passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$&*])[a-zA-Z\d!@#$%^&*]{8,}$/;
+
+    if (name === 'password') {
+      console.log(passwordRegex.test(value));
+      if (!passwordRegex.test(value)) {
+        setFormError(prev => ({ ...prev, password: true }));
+      } else {
+        setFormError(prev => ({ ...prev, password: false }));
+      }
+
+      if (formDatas.passwordConfirm !== value) {
+        setFormError(prev => ({ ...prev, passwordConfirm: true }));
+      } else {
+        setFormError(prev => ({ ...prev, passwordConfirm: false }));
+      }
+    }
+
+    if (name === 'passwordConfirm') {
+      if (formDatas.password !== value) {
+        setFormError(prev => ({ ...prev, passwordConfirm: true }));
+      } else {
+        setFormError(prev => ({ ...prev, passwordConfirm: false }));
+      }
+    }
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = async (e) => {
+  const onClicktoggleAddressModal = () => {
+    setIsPostcodeModal(prev => !prev);
+  };
+
+  const handleSubmit = async e => {
     e.preventDefault();
 
+    const formData = new FormData();
+    formData.append('userId', formDatas.userId);
+    formData.append('password', formDatas.password);
+    formData.append('name', formDatas.name);
+    formData.append('nickname', formDatas.nickname);
+    formData.append('phone', formDatas.phone);
+    formData.append('address', postcodeAddress);
+    formData.append('addressDetail', formDatas.addressDetail);
+    formData.append('profileImg', imgFile);
+
     try {
-      const response = await Api.post('/user/register', formData); 
+      const response = await axios.post('http://localhost:5001/users', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
 
       if (!response.ok) {
         throw new Error('User registration failed.');
       }
     } catch (error) {
       console.log(error);
-
     }
   };
 
@@ -80,7 +127,7 @@ export default function JoinPage() {
       <JoinContainer>
         <TitleBox>
           <JoinImgBox>
-            <img src="/images/commons/logo.png" alt="" />
+            <img src="http://localhost:5001/uploads/1686151270838.jpeg" alt="" />
           </JoinImgBox>
           <JoinTitle>회원가입</JoinTitle>
         </TitleBox>
@@ -92,68 +139,49 @@ export default function JoinPage() {
             <TextField
               label="아이디"
               id="outlined-start-adornment"
-              name="id"
-              value={formData.id}
+              name="userId"
+              value={formDatas.userId}
               onChange={handleInputChange}
+              error={formError.userId === true}
+              helperText={formError.userId === true && '아이디를 입력해주세요.'}
             />
           </InputBox>
           <InputBox>
-            <FormControl sx={{ m: 1, width: '25ch' }} variant="outlined">
-              <InputLabel htmlFor="outlined-adornment-password">Password</InputLabel>
-              <OutlinedInput
-                id="outlined-adornment-password"
-                type={showPassword ? 'text' : 'password'}
-                name="password"
-                value={formData.password}
-                onChange={handleInputChange}
-                endAdornment={
-                  <InputAdornment position="end">
-                    <IconButton
-                      aria-label="toggle password visibility"
-                      onClick={handleClickShowPassword}
-                      onMouseDown={handleMouseDownPassword}
-                      edge="end"
-                    >
-                      {showPassword ? <VisibilityOff /> : <Visibility />}
-                    </IconButton>
-                  </InputAdornment>
-                }
-                label="Password"
-              />
-            </FormControl>
+            <TextField
+              label="비밀번호"
+              id="outlined-start-adornment"
+              name="password"
+              type="password"
+              value={formDatas.password}
+              onChange={handleInputChange}
+              error={formError.password === true || formError.passwordConfirm === true}
+              helperText={
+                formError.password === true &&
+                '비밀번호는 영문 숫자 특수문자를 포함한 8자리 이상 입력해주세요.'
+              }
+            />
           </InputBox>
           <InputBox>
-            <FormControl sx={{ m: 1, width: '25ch' }} variant="outlined">
-              <InputLabel htmlFor="outlined-adornment-password">비밀번호 확인</InputLabel>
-              <OutlinedInput
-                id="outlined-adornment-password"
-                type={showPasswordConfirm ? 'text' : 'password'}
-                name="passwordConfirm"
-                value={formData.passwordConfirm}
-                onChange={handleInputChange}
-                endAdornment={
-                  <InputAdornment position="end">
-                    <IconButton
-                      aria-label="toggle password visibility"
-                      onClick={handleClickShowPasswordConfirm}
-                      onMouseDown={handleMouseDownPassword}
-                      edge="end"
-                    >
-                      {showPasswordConfirm ? <VisibilityOff /> : <Visibility />}
-                    </IconButton>
-                  </InputAdornment>
-                }
-                label="Password-Confirm"
-              />
-            </FormControl>
+            <TextField
+              label="비밀번호 확인"
+              id="outlined-start-adornment"
+              name="passwordConfirm"
+              type="password"
+              value={formDatas.passwordConfirm}
+              onChange={handleInputChange}
+              error={formError.passwordConfirm === true}
+              helperText={formError.passwordConfirm === true && '비밀번호가 서로 다릅니다.'}
+            />
           </InputBox>
           <InputBox>
             <TextField
               label="이름"
               id="outlined-start-adornment"
               name="name"
-              value={formData.name}
+              value={formDatas.name}
               onChange={handleInputChange}
+              error={formError.name === true}
+              helperText={formError.name === true && '이름을 입력해주세요.'}
             />
           </InputBox>
           <InputBox>
@@ -161,8 +189,10 @@ export default function JoinPage() {
               label="닉네임"
               id="outlined-start-adornment"
               name="nickname"
-              value={formData.nickname}
+              value={formDatas.nickname}
               onChange={handleInputChange}
+              error={formError.nickname === true}
+              helperText={formError.nickname === true && '닉네임을 입력해주세요.'}
             />
           </InputBox>
           <InputBox>
@@ -171,8 +201,10 @@ export default function JoinPage() {
               id="outlined-start-adornment"
               placeholder="Ex) 010-0000-0000"
               name="phone"
-              value={formData.phone}
+              value={formDatas.phone}
               onChange={handleInputChange}
+              error={formError.phone === true}
+              helperText={formError.phone === true && '핸드폰 번호를 입력해주세요.'}
             />
           </InputBox>
           <InputBox>
@@ -190,12 +222,12 @@ export default function JoinPage() {
             <TextField
               label="상세주소"
               id="outlined-start-adornment"
-              name="detailedAddress"
-              value={formData.detailedAddress}
+              name="addressDetail"
+              value={formDatas.addressDetail}
               onChange={handleInputChange}
             />
           </InputBox>
-          <Button type="submit" variant="contained" color="success">
+          <Button type="submit" variant="contained" color="success" disabled={disabled}>
             회원가입
           </Button>
           <LoginLink>

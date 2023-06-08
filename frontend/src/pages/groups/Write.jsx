@@ -2,6 +2,10 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import FileUpload from '../../components/commons/FileUpload';
 import { Button, Slider, TextField } from '@mui/material';
+import * as API from '../../api/index';
+import { imgFileState } from '../../stores';
+import { useRecoilState } from 'recoil';
+import { Link } from 'react-router-dom';
 
 const marks = [
   {
@@ -16,9 +20,53 @@ const marks = [
 
 export default function GroupWritePage() {
   const [sliderValue, setSliderValue] = useState(0);
+  const [groupTitle, setGroupTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const [titleError, setTitleError] = useState(false);
+  const [descriptionError, setDescriptionError] = useState(false);
+  const [thumbnail] = useRecoilState(imgFileState);
+
+  console.log(groupTitle, description);
 
   const onChangeSliderValue = value => {
     setSliderValue(value);
+  };
+
+  const onChangeInput = e => {
+    const { name, value } = e.target;
+
+    if (name === 'groupTitle') {
+      if (value === '') {
+        setTitleError(true);
+      } else {
+        setTitleError(false);
+      }
+      setGroupTitle(value);
+    }
+    if (name === 'description') {
+      if (value === '') {
+        setDescriptionError(true);
+      } else {
+        setDescriptionError(false);
+      }
+      setDescription(value);
+    }
+  };
+
+  const onClickAddGroup = async () => {
+    try {
+      const formData = new FormData();
+
+      formData.append('title', groupTitle);
+      formData.append('description', description);
+      formData.append('totalNumOfMembers', sliderValue);
+      formData.append('thumbnail', thumbnail);
+
+      await API.formPost('/groups', formData);
+      alert('성공');
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   return (
@@ -30,7 +78,15 @@ export default function GroupWritePage() {
             <FileUpload />
           </FileContainer>
           <InputBox>
-            <TextField id="outlined-basic" label="그룹 명" variant="outlined" />
+            <TextField
+              id="outlined-basic"
+              label="그룹 명"
+              variant="outlined"
+              name="groupTitle"
+              onChange={onChangeInput}
+              error={titleError}
+              helperText={titleError && '그룹명을 입력해주세요.'}
+            />
           </InputBox>
           <SliderBox>
             <Slider
@@ -48,15 +104,24 @@ export default function GroupWritePage() {
               id="outlined-textarea"
               label="그룹 상세내용"
               placeholder="상세내용을 입력해주세요."
+              name="description"
+              onChange={onChangeInput}
               multiline
+              error={descriptionError}
+              helperText={descriptionError && '상세내용을 입력해주세요.'}
             />
           </InputBox>
           <BtnBox>
-            <Button variant="contained" color="success">
+            <Button
+              variant="contained"
+              color="success"
+              disabled={titleError === true || descriptionError === true || sliderValue === 0}
+              onClick={onClickAddGroup}
+            >
               등록
             </Button>
             <Button variant="outlined" color="success">
-              취소
+              <Link to={'/groups'}>취소</Link>
             </Button>
           </BtnBox>
         </Form>
@@ -147,5 +212,8 @@ const BtnBox = styled.div`
   button {
     font-size: 1.7rem;
     padding: 1rem 5rem;
+    a {
+      font-size: 1.7rem;
+    }
   }
 `;

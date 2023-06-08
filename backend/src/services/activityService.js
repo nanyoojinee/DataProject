@@ -2,7 +2,15 @@ import { Activity } from '../db/models/Activity.js';
 
 class activityService {
   // create/ post
-  static async getactivity({ groupId, userId, name, usedDate, state, actCategoryId, profileImg }) {
+  static async getAllActivity({
+    groupId,
+    userId,
+    name,
+    usedDate,
+    state,
+    actCategoryId,
+    profileImg,
+  }) {
     const activityUser = {
       groupId,
       userId,
@@ -14,6 +22,8 @@ class activityService {
     };
     return activityUser;
   }
+  static async addActivity() {}
+  static async removeActivity() {}
 }
 
 export { activityService };

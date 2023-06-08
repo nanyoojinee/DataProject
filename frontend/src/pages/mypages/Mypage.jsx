@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import ManageModal from '../../components/mypages/groupbox/ManageModal';
 import MyProfile from '../../components/mypages/profilebox/MyProfile';
-
+import RewardPoints from '../../components/mypages/largebox/RewardPoints';
 export default function Mypage() {
 
   const [isManageModalOpen, setIsManageModalOpen] = useState(false);
@@ -49,9 +49,9 @@ export default function Mypage() {
           </Menubox>
         </Menu>
       </Card>
-
-      <LargeBox>
+      <MenuContainer>
         {activeMenuItem === '나의그룹' && (
+          <LargeBox>
           <GroupInfo>
             <GroupImage alt="그룹장 사진" src="/images/commons/kiki.JPG" />
             <GroupDetails>
@@ -81,6 +81,7 @@ export default function Mypage() {
               </GroupButton>
             </GroupDetails>
           </GroupInfo>
+          </LargeBox>
         )}
         {activeMenuItem === '그룹관리' && (
           <GroupManagement>
@@ -88,6 +89,7 @@ export default function Mypage() {
         )}
         {activeMenuItem === '적립조회' && (
           <PointInquiry>
+            <RewardPoints />
           </PointInquiry>
         )}
         {activeMenuItem === '내정보수정' && (
@@ -97,8 +99,7 @@ export default function Mypage() {
         {isManageModalOpen && (
           <ManageModal setIsManageModalOpen={setIsManageModalOpen} />
         )}
-        
-      </LargeBox>
+    </MenuContainer>
     </Container>
   );
 }
@@ -108,6 +109,7 @@ const Container = styled.div`
   justify-content: center;
   align-items: center;
   flex-direction: column;
+  margin-bottom: 10rem;
 `;
 
 const GroupMembers = styled.div`
@@ -126,7 +128,12 @@ const GroupMembers = styled.div`
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 `;
 
-
+const MenuContainer = styled.div`
+  width: 100rem;
+  display:flex;
+  justify-content: center;
+  align-items: center;
+`;
 const Card = styled.div`
   width: 52rem;
   height: 6rem;
@@ -171,7 +178,7 @@ const MenuItem = styled.li`
 `;
 
 const LargeBox = styled.div`
-  width: 65%;
+  width: 90%;
   height: 30rem;
   background-color: #ffff;
   border: 1px solid #d9d9d9;
@@ -340,6 +347,11 @@ const GroupMoveButton = styled.button`
 `;
 const GroupManagement = styled.div``;
 
-const PointInquiry = styled.div``;
+const PointInquiry = styled.div`
+    width:90%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+`;
 
 const ProfileModification = styled.div``;

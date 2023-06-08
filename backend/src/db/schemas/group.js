@@ -3,8 +3,7 @@ import { Schema, model } from 'mongoose';
 const GroupSchema = new Schema(
   {
     groupOwner: {
-      type: Schema.Types.ObjectId,
-      ref: 'User',
+      type: String,
       required: true,
     },
     title: {
