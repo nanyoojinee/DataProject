@@ -9,6 +9,7 @@ export default function FileUpload() {
 
   useEffect(() => {
     return () => {
+      setImgFile(null);
       setImageSrc(null);
     };
   }, []);

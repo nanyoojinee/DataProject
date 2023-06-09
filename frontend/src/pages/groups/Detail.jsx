@@ -1,5 +1,5 @@
 import { Avatar, Button } from '@mui/material';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import MemberProfileBox from '../../components/commons/box/MemberProfileBox';
 import GroupCalendar from '../../components/groups/details/Calendar';
@@ -7,13 +7,23 @@ import { useParams } from 'react-router-dom';
 import * as API from '../../api/index';
 
 export default function GroupDetailPage() {
+  const [groupData, setGroupData] = useState([]);
+
   const groupId = useParams().id;
 
-  console.log(groupId);
+  useEffect(() => {
+    const getGroupData = async () => {
+      const result = await API.get(`/groups/${groupId}`);
+      setGroupData(result.data);
+    };
+    getGroupData();
+  }, []);
+
+  console.log(groupData);
 
   const handleGroupJoin = async () => {
     try {
-      await API.post(`/groups/${groupId}/join`);
+      // await API.post(`/groups/${groupId}/join`);
       alert('성공');
     } catch (err) {
       alert(err);

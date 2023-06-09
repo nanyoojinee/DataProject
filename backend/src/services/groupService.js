@@ -3,7 +3,7 @@ import { GroupJoin } from '../db/models/GroupJoin.js';
 import { v4 as uuidv4 } from "uuid";
 
 class groupService {
-  // create/ post
+  // 그룹의 생성
   static async addGroup({ groupOwner, title, totalNumOfMembers, description, thumbnail }) {
     const id = uuidv4();
     const newGroup = {
@@ -23,29 +23,15 @@ class groupService {
     return groups;
   }
 
-  static async groupJoin({ groupId, userId, state }) {
-    const newGroupJoin = {
-      groupId,
-      userId,
-      state,
-    };
-
-    const groupJoins = await GroupJoin.create({ newGroupJoin });
-    return groupJoins;
-  }
-
-  static async getUserGroup({ userId }) {
-    const group = await GroupJoin.findByUserId({ userId });
-    return group;
-  }
 // 그룹의 상세페이지 조회
   static async getMyGroup(groupId) {
     const myGroup = await Group.findBygroupId(groupId);
     return myGroup;
   }
 
+  //그룹 삭제 
   static async deleteGroup({ groupId }) {
-    const isDataDeleted = await Group.deleteById({ groupId });
+    const isDataDeleted = await Group.deleteById({ id:groupId });
 
     if (!isDataDeleted) {
       const errorMessage = 'Group 삭제: 해당 id를 가진 그룹이 없습니다. 다시 한 번 확인해 주세요.';

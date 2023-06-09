@@ -6,7 +6,7 @@ const GroupJoinSchema = new Schema(
       type: String,
       required: true,
     },
-    userId: {
+    loginedId: {
       type: String,
       required: true,
     },
@@ -15,6 +15,7 @@ const GroupJoinSchema = new Schema(
       required: true,
     },
   },
+  { strictPopulate: false },
   {
     timestamps: true,
   },

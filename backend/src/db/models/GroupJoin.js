@@ -30,9 +30,10 @@ class GroupJoin {
     return updatedGroup;
   }
 
-  static async delete(groupId) {
-    const deletedGroup = await GroupJoinModel.deleteOne(groupId);
-    return deletedGroup;
+  static async deleteByLoginedId({ loginedId }) {
+    const deletedGroup = await GroupJoinModel.deleteOne({ id: loginedId });
+    const isDataDeleted = deletedGroup.deletedCount === 1;
+    return isDataDeleted;
   }
 }
 

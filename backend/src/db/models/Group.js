@@ -12,7 +12,7 @@ class Group {
   }
   //그룹 상세조회
   static async findBygroupId(id) {
-    const mygroup = await GroupModel.findOne({id}).populate('groupJoin');
+    const mygroup = await GroupModel.findOne({ id }).populate('groupJoin');
     return mygroup;
   }
 
@@ -30,8 +30,8 @@ class Group {
     return updatedGroup;
   }
 
-  static async deleteById({ groupId }) {
-    const deleteResult = await GroupModel.deleteOne({ id: groupId });
+  static async deleteById({ id }) {
+    const deleteResult = await GroupModel.deleteOne({ id });
     const isDataDeleted = deleteResult.deletedCount === 1;
     return isDataDeleted;
   }
