@@ -33,39 +33,43 @@ activityRouter.post('/activities', imgupload, async (req, res, next) => {
 });
 
 /** 내 그룹 활동 조회 */
-activityRouter.get('activities/:groupId', imgupload, async (req, res) => {
-  const result = await activityService.getActivity();
+activityRouter.get('/activities/:groupId', async (req, res) => {
+  const result = await activityService.getActivity(req.params.groupId);
 
   res.status(200).json({ result });
-  return;
 });
 
 /** 활동 승인 대기 조회 */
 activityRouter.get('/activities/:groupId/waiting', loginRequired, async (req, res) => {
-  const result = await activityService.gteActivitiy();
+  const result = await activityService.getWaitingActivity(req.params.groupId);
 
   res.status(200).json({ result });
 });
 
-/** 활동 인증 사진 */
+/** 활동 인증 사진 조회 */
 activityRouter.get('/activities/:groupId/ProofImg', loginRequired, async (req, res) => {
-  const result = await activityService.gteActivitiy();
+  const result = await activityService.getActivityProofImages(req.params.groupId);
 
   res.status(200).json({ result });
 });
 
 /** 활동 신청 승인 수락 */
-activityRouter.patch('/actiities/:groupId/수락');
+activityRouter.patch('/activities/:groupId/accept', async (req, res) => {
+  const result = await activityService.acceptActivityRequest(req.params.groupId);
 
-res.status(200).json({ result });
+  res.status(200).json({ result });
+});
 
 /** 활동 신청 승인 거절 */
-activityRouter.delete('/actiities/:groupId/거절');
-res.status(200).json({ result });
+activityRouter.delete('/activities/:groupId/reject', async (req, res) => {
+  const result = await activityService.rejectActivityRequest(req.params.groupId);
+
+  res.status(200).json({ result });
+});
 
 /** 활동 리스트 조회 */
 activityRouter.get('/activities/:loginedId', loginRequired, async (req, res) => {
-  const result = await activityService.getActivitiy();
+  const result = await activityService.getActivities(req.params.loginedId);
 
   res.status(200).json({ result });
 });
