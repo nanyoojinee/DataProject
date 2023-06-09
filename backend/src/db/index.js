@@ -2,7 +2,6 @@ import mongoose from 'mongoose';
 import { User } from './models/User.js';
 import { Group } from './models/Group.js';
 import { GroupJoin } from './models/GroupJoin.js';
-import { ActCategory } from './models/ActCategory.js';
 import { Activity } from './models/Activity.js';
 
 const DB_URL =
@@ -17,4 +16,4 @@ db.on('error', error =>
   console.error('MongoDB 연결에 실패하였습니다...\n' + DB_URL + '\n' + error),
 );
 
-export { User, Group, GroupJoin, ActCategory, Activity };
+export { User, Group, GroupJoin, Activity };
