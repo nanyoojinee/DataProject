@@ -6,19 +6,20 @@ import { loginRequired } from '../middlewares/loginRequired.js';
 const activityRouter = Router();
 const imgupload = upload.single('image');
 
-/** 내 활동 추가 */
+/** 내 활동 등록 */
 activityRouter.post('/activities', imgupload, async (req, res, next) => {
   try {
     const userId = req.currentUserId;
-    const { name, groupId, usedDate, state, actCategoryId } = req.body;
+    const { groupId, state, name, usedDate, category, proofImg } = req.body;
 
     const newActivity = await activityService.addActivity({
       userId,
       groupId,
+      state,
       name,
       usedDate,
-      state,
-      actCategoryId,
+      category,
+      proofImg,
     });
 
     if (newActivity && newActivity.errorMessage) {
@@ -31,50 +32,42 @@ activityRouter.post('/activities', imgupload, async (req, res, next) => {
   }
 });
 
-/** 내 활동 목록 조회 */
-activityRouter.get('/myActivities/:userId', loginRequired, async (req, res) => {
-  try {
-    const userId = req.currentUserId;
-    const { groupId, state, name, usedDate, actCategoryId, proofImg } = req.body;
+/** 내 그룹 활동 조회 */
+activityRouter.get('activities/:groupId', imgupload, async (req, res) => {
+  const result = await activityService.getActivity();
 
-    const allActivities = await activityService.getAllActivity({
-      userId,
-      groupId,
-      state,
-      name,
-      usedDate,
-      actCategoryId,
-      proofImg,
-    });
-
-    if (allActivities && allActivities.errorMessage) {
-      throw new Error(allActivities.errorMessage);
-    }
-    res.status(200).json({ allActivities });
-    return;
-  } catch (error) {
-    next(error);
-  }
+  res.status(200).json({ result });
+  return;
 });
 
-/** 내 활동 삭제 */
-activityRouter.delete('/deletedata/:userId', loginRequired, async (req, res) => {
-  try {
-    const userId = req.currentUserId;
+/** 활동 승인 대기 조회 */
+activityRouter.get('/activities/:groupId/waiting', loginRequired, async (req, res) => {
+  const result = await activityService.gteActivitiy();
 
-    const deleteActivity = await activityService.removeActivity({
-      userId,
-    });
-
-    if (deleteActivity && deleteActivity.errorMessage) {
-      throw new Error(deleteActivity.errorMessage);
-    }
-    res.status(200).json('deleteActivity');
-    return;
-  } catch (error) {
-    next(error);
-  }
+  res.status(200).json({ result });
 });
 
-//활동 관련기능
+/** 활동 인증 사진 */
+activityRouter.get('/activities/:groupId/ProofImg', loginRequired, async (req, res) => {
+  const result = await activityService.gteActivitiy();
+
+  res.status(200).json({ result });
+});
+
+/** 활동 신청 승인 수락 */
+activityRouter.patch('/actiities/:groupId/수락');
+
+res.status(200).json({ result });
+
+/** 활동 신청 승인 거절 */
+activityRouter.delete('/actiities/:groupId/거절');
+res.status(200).json({ result });
+
+/** 활동 리스트 조회 */
+activityRouter.get('/activities/:loginedId', loginRequired, async (req, res) => {
+  const result = await activityService.getActivitiy();
+
+  res.status(200).json({ result });
+});
+
 export { activityRouter };

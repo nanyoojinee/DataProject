@@ -22,7 +22,7 @@ const ActivitySchema = new Schema(
       type: String,
       require: true,
     },
-    actCategoryId: {
+    category: {
       type: String,
       require: true,
     },
@@ -37,4 +37,5 @@ const ActivitySchema = new Schema(
 );
 
 const ActivityModel = model('Activity', ActivitySchema);
+
 export { ActivityModel };
