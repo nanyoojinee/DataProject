@@ -34,20 +34,20 @@ activityRouter.post('/activities', imgupload, async (req, res, next) => {
 
 /** 내 그룹 활동 조회 */
 activityRouter.get('/activities/:groupId', async (req, res) => {
-  const result = await activityService.getActivity(req.params.groupId);
-
-  res.status(200).json({ result });
+  const { groupId } = req.params;
+  const data = await activityModel.find({ groupdId });
+  res.status(200).json({ data });
 });
 
 /** 활동 승인 대기 조회 */
 activityRouter.get('/activities/:groupId/waiting', loginRequired, async (req, res) => {
-  const result = await activityService.getWaitingActivity(req.params.groupId);
-
-  res.status(200).json({ result });
+  const { groupId } = req.params;
+  const data = await activityModel.find({ groupId });
+  res.status(200).json({ data });
 });
 
 /** 활동 인증 사진 조회 */
-activityRouter.get('/activities/:groupId/ProofImg', loginRequired, async (req, res) => {
+activityRouter.get('/activities/:groupId/proofImg', loginRequired, async (req, res) => {
   const result = await activityService.getActivityProofImages(req.params.groupId);
 
   res.status(200).json({ result });
