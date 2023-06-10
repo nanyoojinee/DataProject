@@ -5,13 +5,17 @@ import { Avatar } from '@mui/material';
 export default function MyProfile({ userInfo }) {
   return (
     <ProfileBox>
-      <Avatar alt="내 프로필" src="/images/commons/kkam.png" sx={{ width: 60, height: 60 }} />
-      <UserName>{userInfo.name}</UserName>
-      <Email>{userInfo.nickname}</Email>
+      <Avatar
+        alt="내 프로필"
+        src={`http://localhost:5001/uploads/${userInfo?.user?.profileImg}`}
+        sx={{ width: 60, height: 60 }}
+      />
+      <UserName>{userInfo?.user?.name}</UserName>
+      <Email>{userInfo?.user?.nickname}</Email>
       <InfoRow>
         <InfoItem>
           <InfoLabel>Phone</InfoLabel>
-          <InfoValue>{userInfo.phone}</InfoValue>
+          <InfoValue>{userInfo?.user?.phone}</InfoValue>
         </InfoItem>
       </InfoRow>
       <Separator />

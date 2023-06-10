@@ -4,25 +4,36 @@ import FileUpload from '../../components/commons/FileUpload';
 import { Button, TextField } from '@mui/material';
 
 import SearchIcon from '@mui/icons-material/Search';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Postcode from '../../components/commons/DaumPostCode';
 import { useRecoilState } from 'recoil';
-import { imgFileState, isPostcodeModalState, postcodeAddressState } from '../../stores';
+import {
+  imgFileState,
+  isPostcodeModalState,
+  postcodeAddressState,
+  updateState,
+  userInfoState,
+} from '../../stores';
 import axios from 'axios';
+import { ROUTE } from '../../constants/routes/routeData';
 
-export default function JoinPage() {
+export default function JoinPage({ page }) {
   const [isPostcodeModal, setIsPostcodeModal] = useRecoilState(isPostcodeModalState);
   const [postcodeAddress, setPostcodeAddress] = useRecoilState(postcodeAddressState);
   const [imgFile] = useRecoilState(imgFileState);
+  const [userInfo] = useRecoilState(userInfoState);
+  const [, setUpdate] = useRecoilState(updateState);
+
+  const navigate = useNavigate();
 
   const [formDatas, setFormData] = useState({
-    userId: '',
+    userId: userInfo?.user?.userId || '',
     password: '',
     passwordConfirm: '',
-    name: '',
-    nickname: '',
-    phone: '',
-    addressDetail: '',
+    name: userInfo?.user?.name || '',
+    nickname: userInfo?.user?.nickname || '',
+    phone: userInfo?.user?.phone || '',
+    addressDetail: userInfo?.user?.addressDetail || '',
   });
 
   const [formError, setFormError] = useState({
@@ -108,14 +119,36 @@ export default function JoinPage() {
     formData.append('profileImg', imgFile);
 
     try {
-      const response = await axios.post('http://localhost:5001/users', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
+      if (page === 'join') {
+        const response = await axios.post('http://localhost:5001/users', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
 
-      if (!response.ok) {
-        throw new Error('User registration failed.');
+        navigate('/');
+
+        if (!response.ok) {
+          throw new Error('User registration failed.');
+        }
+      } else {
+        const response = await axios.put(
+          `http://localhost:5001/users/${userInfo?.user?._id}`,
+          formData,
+          {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+              Authorization: `Bearer ${sessionStorage.getItem('userToken')}`,
+            },
+          },
+        );
+
+        setUpdate(prev => prev + 1);
+        navigate(ROUTE.PAGE_GROUP.link);
+
+        if (!response.ok) {
+          throw new Error('정보 수정 실패');
+        }
       }
     } catch (error) {
       console.log(error);
@@ -129,11 +162,11 @@ export default function JoinPage() {
           <JoinImgBox>
             <img src="/images/commons/mainearth.png" alt="사랑해 지구야 로고" />
           </JoinImgBox>
-          <JoinTitle>회원가입</JoinTitle>
+          <JoinTitle>{page === 'join' ? '회원가입' : '내 정보 수정'}</JoinTitle>
         </TitleBox>
         <Form onSubmit={handleSubmit}>
           <ProfileImgBox>
-            <FileUpload />
+            <FileUpload img={userInfo?.user?.profile} />
           </ProfileImgBox>
           <InputBox>
             <TextField
@@ -144,6 +177,7 @@ export default function JoinPage() {
               onChange={handleInputChange}
               error={formError.userId === true}
               helperText={formError.userId === true && '아이디를 입력해주세요.'}
+              disabled={page === 'changeInfo'}
             />
           </InputBox>
           <InputBox>
@@ -182,6 +216,7 @@ export default function JoinPage() {
               onChange={handleInputChange}
               error={formError.name === true}
               helperText={formError.name === true && '이름을 입력해주세요.'}
+              disabled={page === 'changeInfo'}
             />
           </InputBox>
           <InputBox>
@@ -212,7 +247,7 @@ export default function JoinPage() {
               label={postcodeAddress ? '' : '주소'}
               id="outlined-start-adornment"
               disabled
-              value={postcodeAddress}
+              value={userInfo?.user?.address || postcodeAddress}
             />
             <SearchIconBox onClick={onClicktoggleAddressModal}>
               <SearchIcon />
@@ -228,11 +263,13 @@ export default function JoinPage() {
             />
           </InputBox>
           <Button type="submit" variant="contained" color="success" disabled={disabled}>
-            회원가입
+            {page === 'join' ? '회원가입' : '수정하기'}
           </Button>
-          <LoginLink>
-            <Link to="/login">이미 가입하셨다면? 로그인 하러가기</Link>
-          </LoginLink>
+          {page === 'join' && (
+            <LoginLink>
+              <Link to="/login">이미 가입하셨다면? 로그인 하러가기</Link>
+            </LoginLink>
+          )}
         </Form>
       </JoinContainer>
       {isPostcodeModal && <Postcode />}
@@ -246,7 +283,7 @@ const JoinWrap = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-bottom:15rem;
+  margin-bottom: 15rem;
 `;
 
 const JoinContainer = styled.div`
@@ -262,7 +299,7 @@ const TitleBox = styled.div`
   justify-content: center;
   align-items: center;
   gap: 1rem;
-  padding-right:5rem;
+  padding-right: 5rem;
 `;
 
 const JoinTitle = styled.h3`
@@ -273,7 +310,7 @@ const JoinTitle = styled.h3`
 
 const JoinImgBox = styled.div`
   width: 6rem;
-  margin-right:1rem;
+  margin-right: 1rem;
   img {
     width: 120%;
   }

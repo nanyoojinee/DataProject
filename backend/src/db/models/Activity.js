@@ -7,7 +7,7 @@ class Activity {
   }
 
   static async findById({ activityId }) {
-    const activity = await ActivityModel.fineOne({ id: activityId });
+    const activity = await ActivityModel.findOne({ id: activityId });
     return activity;
   }
 
@@ -26,9 +26,7 @@ class Activity {
   }
 
   static async deleteById({ activityId }) {
-    const deleteResult = await ActivityModel.deleteOne({
-      id: activityId,
-    });
+    const deleteResult = await ActivityModel.deleteOne({ id: activityId });
     const isDataDeleted = deleteResult.deletedCount === 1;
     return isDataDeleted;
   }

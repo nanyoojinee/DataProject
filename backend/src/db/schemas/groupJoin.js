@@ -3,11 +3,13 @@ import { Schema, model } from 'mongoose';
 const GroupJoinSchema = new Schema(
   {
     groupId: {
-      type: String,
+      type: Schema.Types.ObjectId,
+      ref: 'Group',
       required: true,
     },
-    loginedId: {
-      type: String,
+    userId: {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
       required: true,
     },
     state: {

@@ -13,7 +13,6 @@ export default function GroupDetailPage() {
 
   const groupId = useParams().id;
 
-
   useEffect(() => {
     const getGroupData = async () => {
       const result = await API.get(`/groups/${groupId}`);
@@ -22,18 +21,15 @@ export default function GroupDetailPage() {
     getGroupData();
   }, []);
 
-  console.log(groupData);
-
   const handleGroupJoin = async () => {
     try {
-      await API.post(`/groups/${groupId}/join`);
-      
-
+      await API.post(`/mygroups/${groupId}`);
+      alert(`${groupData.title}그룹에 신청하였습니다.`);
     } catch (err) {
       console.log(err);
     }
   };
-  
+
   const tumblerUsage = 81;
   const tumblerTotal = 1000;
   const tumblerWidth = (tumblerUsage / tumblerTotal) * 100;
@@ -72,8 +68,7 @@ export default function GroupDetailPage() {
                 <GroupDescription>{groupData.description}</GroupDescription>
               </div>
               <div>
- 
-                <Modal/>
+                <Modal />
                 <Button
                   style={{ width: '180px', height: '40px', fontSize: '2.2rem' }}
                   variant="contained"
@@ -81,7 +76,7 @@ export default function GroupDetailPage() {
                   onClick={handleGroupJoin}
                 >
                   그룹신청
-              </Button>
+                </Button>
               </div>
             </DetailInfo>
           </DetailInfoBox>
@@ -107,40 +102,36 @@ export default function GroupDetailPage() {
         <GroupCalendar />
       </GroupDetailContainer>
       <AdditionalBox>
-          <ProgressContainer>
-            <ProgressTitle>
-              <IconContainer>
-              🥤텀블러
-              </IconContainer>
-              <ProgressBar>
-                <FilledProgressBar width={tumblerWidth} />
-              </ProgressBar>
-              <ProgressValue>{tumblerUsage}</ProgressValue>
-            </ProgressTitle>
-            <ProgressTitle>
-              <IconContainer>
-              🫙다회용기
-              </IconContainer>
-              <ProgressBar>
-                <FilledProgressBar width={containerWidth} />
-              </ProgressBar>
-              <ProgressValue>{containerUsage}</ProgressValue>
-            </ProgressTitle>
-          </ProgressContainer>
-          <EarthBox>
-            <LogoImage>
-              <img src="/images/commons/coinearth.png" alt="사랑해 지구야 로고" />
-            </LogoImage>
-            <StatusMessage>
-              <SpeechBubble>
-                <SpeechText>Good!</SpeechText>
-                <Desc>3학년 1반 그룹의 총 텀블러 사용 횟수는 {tumblerUsage}회,</Desc>
-                <Desc>다회용기 사용 횟수는 {containerUsage}회야!</Desc>
-                <SpeechHighlight>우리는 ⭐️{totalUsage}회⭐️ 지구를 지켰어!</SpeechHighlight>
-              </SpeechBubble>
-            </StatusMessage>
-          </EarthBox>
-        </AdditionalBox>
+        <ProgressContainer>
+          <ProgressTitle>
+            <IconContainer>🥤텀블러</IconContainer>
+            <ProgressBar>
+              <FilledProgressBar width={tumblerWidth} />
+            </ProgressBar>
+            <ProgressValue>{tumblerUsage}</ProgressValue>
+          </ProgressTitle>
+          <ProgressTitle>
+            <IconContainer>🫙다회용기</IconContainer>
+            <ProgressBar>
+              <FilledProgressBar width={containerWidth} />
+            </ProgressBar>
+            <ProgressValue>{containerUsage}</ProgressValue>
+          </ProgressTitle>
+        </ProgressContainer>
+        <EarthBox>
+          <LogoImage>
+            <img src="/images/commons/coinearth.png" alt="사랑해 지구야 로고" />
+          </LogoImage>
+          <StatusMessage>
+            <SpeechBubble>
+              <SpeechText>Good!</SpeechText>
+              <Desc>3학년 1반 그룹의 총 텀블러 사용 횟수는 {tumblerUsage}회,</Desc>
+              <Desc>다회용기 사용 횟수는 {containerUsage}회야!</Desc>
+              <SpeechHighlight>우리는 ⭐️{totalUsage}회⭐️ 지구를 지켰어!</SpeechHighlight>
+            </SpeechBubble>
+          </StatusMessage>
+        </EarthBox>
+      </AdditionalBox>
     </GroupDetailWrap>
   );
 }
@@ -294,7 +285,7 @@ const AdditionalBox = styled.div`
   gap: 4rem;
   margin-bottom: 4rem;
   margin-top: 20rem;
-  justify-content:center;
+  justify-content: center;
   justify-content: space-around;
   @media (max-width: 1080px) {
     flex-direction: column;

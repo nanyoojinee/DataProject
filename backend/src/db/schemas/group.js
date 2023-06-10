@@ -2,12 +2,9 @@ import { Schema, model } from 'mongoose';
 
 const GroupSchema = new Schema(
   {
-    id: {
-      type: String,
-      required: true,
-    },
-    groupOwner: {
-      type: String,
+    groupOwnerId: {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
       required: true,
     },
     title: {
@@ -21,11 +18,6 @@ const GroupSchema = new Schema(
     totalNumOfMembers: {
       type: Number,
       required: true,
-    },
-    members: {
-      type: Schema.Types.ObjectId,
-      ref: 'groupJoin',
-      required: false,
     },
     thumbnail: { type: String },
   },

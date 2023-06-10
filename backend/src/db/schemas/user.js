@@ -2,10 +2,6 @@ import { Schema, model } from 'mongoose';
 
 const userSchema = new Schema(
   {
-    id: {
-      type: String,
-      required: true,
-    },
     userId: {
       type: String,
       required: true,
@@ -42,6 +38,7 @@ const userSchema = new Schema(
       type: String,
     },
   },
+  { strictPopulate: false },
   {
     timestamps: true,
   },

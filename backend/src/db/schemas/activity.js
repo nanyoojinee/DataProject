@@ -3,12 +3,14 @@ import { Schema, model } from 'mongoose';
 const ActivitySchema = new Schema(
   {
     groupId: {
-      type: String,
-      require: true,
+      type: Schema.Types.ObjectId,
+      ref: 'Group',
+      required: true,
     },
     userId: {
-      type: String,
-      require: true,
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+      required: true,
     },
     name: {
       type: String,
@@ -22,14 +24,13 @@ const ActivitySchema = new Schema(
       type: String,
       require: true,
     },
-    actCategoryId: {
+    category: {
       type: String,
       require: true,
+      enum: ['tumbler', 'multipleContainers'],
     },
-
-    profileImg: {
+    proofImg: {
       type: String,
-      require: true,
     },
   },
   {

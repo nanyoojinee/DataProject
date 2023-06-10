@@ -1,7 +1,7 @@
 import { User } from '../db/index.js';
 import bcrypt from 'bcrypt';
-import { v4 as uuidv4 } from 'uuid';
 import jwt from 'jsonwebtoken';
+import { ActivityModel } from '../db/schemas/activity.js';
 
 class userAuthService {
   static async addUser({
@@ -22,9 +22,7 @@ class userAuthService {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const id = uuidv4();
     const newUser = {
-      id,
       userId,
       password: hashedPassword,
       name,
@@ -55,9 +53,9 @@ class userAuthService {
     }
 
     const secretKey = process.env.JWT_SECRET_KEY || 'jwt-secret-key';
-    const token = jwt.sign({ loginedId: user.id }, secretKey);
+    const token = jwt.sign({ id: user._id }, secretKey);
 
-    const { id, name, nickname, phone, address, addressDetail, profileImage } = user;
+    const { id, name, nickname, phone, address, addressDetail, profileImg } = user;
 
     const loginUser = {
       token,
@@ -68,7 +66,7 @@ class userAuthService {
       phone,
       address,
       addressDetail,
-      profileImage,
+      profileImg,
       errorMessage: null,
     };
     return loginUser;
@@ -127,13 +125,23 @@ class userAuthService {
       await User.update({ loginedId, fieldToUpdate, newValue });
     }
 
-    if (toUpdate.profileImage) {
-      const fieldToUpdate = 'profileImage';
-      const newValue = toUpdate.profileImage;
+    if (toUpdate.profileImg) {
+      const fieldToUpdate = 'profileImg';
+      const newValue = toUpdate.profileImg;
       await User.update({ loginedId, fieldToUpdate, newValue });
     }
 
     return user;
+  }
+
+  static async getUserActivityCount(userId, category) {
+    const count = await ActivityModel.countDocuments({
+      userId: userId,
+      state: '승인',
+      category: category,
+    });
+
+    return count;
   }
 
   static async getUserInfo({ loginedId }) {
@@ -145,7 +153,18 @@ class userAuthService {
       return { errorMessage };
     }
 
-    return user;
+    const tumblerCount = await userAuthService.getUserActivityCount(loginedId, 'tumbler');
+    const multipleContainersCount = await userAuthService.getUserActivityCount(
+      loginedId,
+      'multipleContainers',
+    );
+
+    const totalCount = tumblerCount + multipleContainersCount;
+
+    return { user, tumblerCount, multipleContainersCount, totalCount };
+  }
+  catch(error) {
+    throw new Error('Failed to get user info.');
   }
 }
 

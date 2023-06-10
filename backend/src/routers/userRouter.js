@@ -7,6 +7,7 @@ import { upload } from '../middlewares/imageUploadMiddleware.js';
 const userAuthRouter = Router();
 const imgUpload = upload.single('profileImg');
 
+// 회원가입
 userAuthRouter.post('/users', imgUpload, async (req, res, next) => {
   try {
     if (is.emptyObject(req.body)) {
@@ -15,7 +16,7 @@ userAuthRouter.post('/users', imgUpload, async (req, res, next) => {
 
     // req (request) 에서 데이터 가져오기
 
-    const { userId, password, name, nickname, phone, address, addressDetail, profileImage } =
+    const { userId, password, name, nickname, phone, address, addressDetail, profileImg } =
       req.body;
 
     const newUser = await userAuthService.addUser({
@@ -67,45 +68,24 @@ userAuthRouter.get('/users', loginRequired, async (req, res, next) => {
   }
 });
 
-// userAuthRouter.get('/user/current', loginRequired, async (req, res, next) => {
-//   try {
-//     // jwt토큰에서 추출된 사용자 id를 가지고 db에서 사용자 정보를 찾음.
-//     const loginedId = req.currentUserId;
-//     const currentUserInfo = await userAuthService.getUserInfo({
-//       loginedId,
-//     });
-
-//     if (currentUserInfo.errorMessage) {
-//       throw new Error(currentUserInfo.errorMessage);
-//     }
-
-//     res.status(200).send(currentUserInfo);
-//   } catch (error) {
-//     next(error);
-//   }
-// });
-
-userAuthRouter.put('/users/:id', loginRequired, async (req, res, next) => {
+// 정보 수정
+userAuthRouter.put('/users/:id', imgUpload, loginRequired, async (req, res, next) => {
   try {
     const loginedId = req.params.id;
-    const userId = req.body.userId ?? null;
     const password = req.body.password ?? null;
-    const name = req.body.name ?? null;
     const nickname = req.body.nickname ?? null;
     const phone = req.body.phone ?? null;
     const address = req.body.address ?? null;
     const addressDetail = req.body.addressDetail ?? null;
-    const profileImage = req.body.profileImage ?? null;
+    const profileImg = req.body.profileImg ?? null;
 
     const toUpdate = {
-      userId,
       password,
-      name,
       nickname,
       phone,
       address,
       addressDetail,
-      profileImage,
+      profileImg,
     };
 
     // 해당 사용자 아이디로 사용자 정보를 db에서 찾아 업데이트함. 업데이트 요소가 없을 시 생략함

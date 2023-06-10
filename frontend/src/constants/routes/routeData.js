@@ -46,7 +46,7 @@ export const ROUTE = {
   CHANGEINFO: {
     path: '/changeinfo',
     link: '/changeinfo',
-    element: <JoinPage page="changeinfo" />,
+    element: <JoinPage page="changeInfo" />,
   },
 };
 

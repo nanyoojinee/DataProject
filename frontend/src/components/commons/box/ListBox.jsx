@@ -9,7 +9,7 @@ import { res } from '../../../styles/responsive';
 export default function ListBox({ group }) {
   return (
     <ListBoxWrap>
-      <Link to={`${ROUTE.GROUP_DETAIL.link}/${group.id}`}>
+      <Link to={`${ROUTE.GROUP_DETAIL.link}/${group._id}`}>
         <ListBackImg img={`http://localhost:5001/uploads/${group.thumbnail}`} />
         <ListContent>
           <TitleBox>

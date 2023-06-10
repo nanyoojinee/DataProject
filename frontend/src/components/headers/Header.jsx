@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { ROUTE } from '../../constants/routes/routeData';
 import { useRecoilState } from 'recoil';
-import { userInfoState, userTokenState } from '../../stores';
+import { updateState, userInfoState, userTokenState } from '../../stores';
 import * as API from '../../api/index';
 import MobileMenu from './Mobilemenu';
 
@@ -12,6 +12,7 @@ export default function Header() {
   const [userToken, setUserToken] = useRecoilState(userTokenState);
   const [userInfo, setUserInfo] = useRecoilState(userInfoState);
   const [isMobile, setIsMobile] = useState(false);
+  const [update] = useRecoilState(updateState);
 
   useEffect(() => {
     if (sessionStorage.getItem('userToken')) {
@@ -28,7 +29,7 @@ export default function Header() {
     if (userToken) {
       getUserInfo();
     }
-  }, [userToken]);
+  }, [userToken, update]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -73,7 +74,7 @@ export default function Header() {
           )}
           {userToken && (
             <InfoMenu>
-              <UserName>{userInfo.nickname}</UserName>
+              <UserName>{userInfo?.user?.nickname}</UserName>
               <CountBox>
                 <span>🥤: 9</span>
               </CountBox>
@@ -159,6 +160,8 @@ const LogoImgBox = styled.div`
   }
 `;
 
+const LogoImgBox = styled.div``;
+
 const NavigationBox = styled.div`
   display: flex;
   align-items: center;
@@ -231,6 +234,16 @@ const SubMenuList = styled.ul`
   display: flex;
   align-items: center;
   height: 100%;
+  `
+const LogoBox = styled.div`
+  width: 8rem;
+  margin-left: -3rem;
+  img {
+    width: 100%;
+  }
+  display: flex;
+  flex-direction: row;
+  gap: 5rem;
 `;
 
 const SubMenuBtn = styled.button`

@@ -1,29 +1,20 @@
 import { Activity } from '../db/models/Activity.js';
 
 class activityService {
-  // create/ post
-  static async getAllActivity({
-    groupId,
-    userId,
-    name,
-    usedDate,
-    state,
-    actCategoryId,
-    profileImg,
-  }) {
-    const activityUser = {
-      groupId,
+  static async addActivity({ userId, groupId, state, name, usedDate, category, proofImg }) {
+    const newActivity = {
       userId,
+      groupId,
+      state,
       name,
       usedDate,
-      state,
-      actCategoryId,
-      profileImg,
+      category,
+      proofImg,
     };
-    return activityUser;
+    return Activity.create({ newActivity });
   }
-  static async addActivity() {}
-  static async removeActivity() {}
+  // static async addActivity() {}
+  // static async removeActivity() {}
 }
 
 export { activityService };

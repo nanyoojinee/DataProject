@@ -7,13 +7,48 @@ import {
   RadioGroup,
   TextField,
 } from '@mui/material';
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import { getDates } from '../../../commons/utils/getDate';
 import FileUpload from '../../commons/FileUpload';
 import { res } from '../../../styles/responsive';
+import { imgFileState, userInfoState } from '../../../stores';
+import { useRecoilState } from 'recoil';
+import { useParams } from 'react-router-dom';
+import * as API from '../../../api/index';
 
 export default function AddActiveModal({ onClickToggleModal, selectedDate }) {
+  const [activity, setActivity] = useState('');
+  const [userInfo] = useRecoilState(userInfoState);
+  const [imgFile] = useRecoilState(imgFileState);
+
+  const groupId = useParams().id;
+
+  const onChangeActivity = e => {
+    setActivity(e.target.value);
+  };
+
+  console.log(groupId);
+
+  const handleAddActivity = async () => {
+    const formData = new FormData();
+
+    formData.append('name', userInfo.user.name);
+    formData.append('groupId', groupId);
+    formData.append('usedDate', selectedDate);
+    formData.append('category', activity);
+    formData.append('proofImg', imgFile);
+
+    try {
+      const result = await API.formPost('/activities', formData);
+      console.log(result);
+      alert('성공');
+      onClickToggleModal();
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   return (
     <BackDrop>
       <Modal>
@@ -44,8 +79,18 @@ export default function AddActiveModal({ onClickToggleModal, selectedDate }) {
               aria-labelledby="demo-row-radio-buttons-group-label"
               name="row-radio-buttons-group"
             >
-              <FormControlLabel value="텀블러" control={<Radio />} label="텀블러" />
-              <FormControlLabel value="다회용기" control={<Radio />} label="다회용기" />
+              <FormControlLabel
+                value="tumbler"
+                control={<Radio />}
+                label="텀블러"
+                onChange={onChangeActivity}
+              />
+              <FormControlLabel
+                value="multipleContainers"
+                control={<Radio />}
+                label="다회용기"
+                onChange={onChangeActivity}
+              />
             </RadioGroup>
           </FormControl>
           <FileBox>
@@ -53,7 +98,7 @@ export default function AddActiveModal({ onClickToggleModal, selectedDate }) {
             <FileUpload />
           </FileBox>
           <BtnBox>
-            <Button variant="contained" color="success">
+            <Button variant="contained" color="success" onClick={handleAddActivity}>
               등록
             </Button>
             <Button variant="outlined" color="success" onClick={onClickToggleModal}>
