@@ -27,7 +27,7 @@ export default function Mypage() {
   const [userToken] = useRecoilState(userTokenState);
   const [, setIsScucessModal] = useRecoilState(isSuccessModalState);
   const [, setIsErrorModal] = useRecoilState(isErrorModalState);
-
+  
   useEffect(() => {
     if (!sessionStorage.getItem('userToken')) {
       navigate('/');
@@ -45,19 +45,24 @@ export default function Mypage() {
     }
   }, [userInfo]);
 
+  console.log('mygroup!!!!!!!!!!!!!!!!!',myGroup);
+
   useEffect(() => {
     const getWaitingMembers = async () => {
-      const result = await API.get(`/mygroups/${myGroup?.result[0]?.groupId?._id}/waiting`);
-      setWaitingMembers(result.data);
+      const result = await API.get(`/mygroups/${myGroup?.result?.[0]?.groupId?._id}/waiting`);
+      const waitingMembers = result.data;
+          setWaitingMembers(waitingMembers);
     };
-    if (myGroup?.groupId?._id) {
+    if (myGroup?.result?.[0]?.groupId?._id) {
       getWaitingMembers();
     }
   }, [myGroup]);
+  
+console.log('waiting!!!!!!!!!',waitingMembers);
 
   useEffect(() => {
     const getWaitingActivity = async () => {
-      const result = await API.get(`/activities/${myGroup?.result[0]?.groupId?._id}/waiting`);
+      const result = await API.get(`/activities/${myGroup?.result?.[0]?.groupId?._id}/waiting`);
       setWaitingActivity(result.data);
     };
     console.log(getWaitingActivity);
@@ -72,6 +77,7 @@ export default function Mypage() {
 
   const openManageModal = () => {
     setIsManageModalOpen(true);
+    console.log('waitingmembers',waitingMembers);
   };
 
   const handleMenuItemClick = menuItem => {

@@ -1,8 +1,19 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { Avatar } from '@mui/material';
-
+import * as API from '../../../api';
 export default function ManageModal({ setIsManageModalOpen, waitingMembers }) {
+  const handleApproveMember = (userId, groupId) => {
+    console.log(groupId, userId);
+    API.put(`/mygroups/${groupId}/${userId}/approval`)
+      .then(_response => {
+        console.log('멤버가 성공적으로 승인되었습니다.');
+      })
+      .catch(error => {
+        console.log('멤버 승인에 실패했습니다.', error);
+      });
+  };
+  // /mygroups/648976bd979b21553804f272/6489781f979b21553804f29f/approval
   const [isJoinModalOpen, setIsJoinModalOpen] = useState(true);
 
   const closeManageModal = () => {
@@ -48,7 +59,7 @@ export default function ManageModal({ setIsManageModalOpen, waitingMembers }) {
                       </MemberText>
                     </MemberNameBox>
                     <ManageButton>
-                      <AcceptButton>수락</AcceptButton>
+                      <AcceptButton onClick={() => handleApproveMember(el.userId._id, el.groupId)}>수락</AcceptButton>
                       <RejectButton>거절</RejectButton>
                     </ManageButton>
                   </MemberItem>

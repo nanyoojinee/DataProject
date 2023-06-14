@@ -7,25 +7,22 @@ import { useParams } from 'react-router-dom';
 import * as API from '../../api/index';
 import { res } from '../../styles/responsive';
 import { useRecoilState } from 'recoil';
-import { isErrorModalState, isSuccessModalState, userInfoState } from '../../stores';
+import { isErrorModalState, isSuccessModalState } from '../../stores';
 
 export default function GroupDetailPage() {
   const [groupData, setGroupData] = useState([]);
   const [, setIsScucessModal] = useRecoilState(isSuccessModalState);
   const [, setIsErrorModal] = useRecoilState(isErrorModalState);
-  const [userInfo] = useRecoilState(userInfoState);
 
   const groupId = useParams().id;
 
   useEffect(() => {
     const getGroupData = async () => {
       const result = await API.get(`/groups/${groupId}`);
-      setGroupData(result.data);
+      setGroupData(result.data.myGroup);
     };
     getGroupData();
   }, []);
-
-  console.log(groupData);
 
   const handleGroupJoin = async () => {
     try {
@@ -52,31 +49,29 @@ export default function GroupDetailPage() {
   return (
     <GroupDetailWrap>
       <GroupDetailContainer>
-        <GroupTitle>{groupData?.myGroup?.title}</GroupTitle>
+        <GroupTitle>{groupData.title}</GroupTitle>
         <DetailContent01>
           <DetailInfoBox>
-            <DetailThumbnail
-              img={`http://localhost:5001/uploads/${groupData?.myGroup?.thumbnail}`}
-            />
+            <DetailThumbnail />
             <DetailInfo>
               <div>
                 <UserProfile>
                   <Avatar
                     alt="내 프로필"
-                    src={`http:localhost:5001/uploads/${groupData?.groupOwnerId?.profileImg}`}
+                    src="/images/commons/kkam.png"
                     sx={{ width: 40, height: 40 }}
                   />
-                  <UserName>{groupData?.myGroup?.groupOwnerId?.name}</UserName>
+                  <UserName>깜장이</UserName>
                 </UserProfile>
                 <UserBox>
                   <span>생성일</span>
-                  <span>{groupData?.myGroup?.createdAt}</span>
+                  <span>2023.01.01</span>
                 </UserBox>
                 <UserBox>
                   <span>모집인원</span>
-                  <span>{groupData?.myGroup?.totalNumOfMembers}명</span>
+                  <span>{groupData.totalNumOfMembers}명</span>
                 </UserBox>
-                <GroupDescription>{groupData?.myGroup?.description}</GroupDescription>
+                <GroupDescription>{groupData.description}</GroupDescription>
               </div>
               <div>
                 <Button
@@ -84,7 +79,6 @@ export default function GroupDetailPage() {
                   variant="contained"
                   color="success"
                   onClick={handleGroupJoin}
-                  disabled={groupData?.myGroup?.groupOwnerId?._id === userInfo?.user?._id}
                 >
                   그룹신청
                 </Button>
@@ -96,13 +90,17 @@ export default function GroupDetailPage() {
               <GroupMemberTitle>그룹 명단</GroupMemberTitle>
               <MemberNumBox>
                 <img src="/images/commons/user.png" alt="" />
-                <MemberNum>{groupData?.members?.length} / 15</MemberNum>
+                <MemberNum>14 / 15</MemberNum>
               </MemberNumBox>
             </GroupMemberTitleBox>
             <GroupMembers>
-              {groupData?.members?.map(member => (
-                <MemberProfileBox member={member} key={member?._id} />
-              ))}
+              <MemberProfileBox />
+              <MemberProfileBox />
+              <MemberProfileBox />
+              <MemberProfileBox />
+              <MemberProfileBox />
+              <MemberProfileBox />
+              <MemberProfileBox />
             </GroupMembers>
           </GroupMemberBox>
         </DetailContent01>
@@ -185,9 +183,8 @@ const DetailInfoBox = styled.div`
 const DetailThumbnail = styled.div`
   width: 30rem;
   height: 30rem;
-  background-image: ${({ img }) => `url(${img})`};
+  background-image: url('/images/main/main01.png');
   background-size: cover;
-  background-position: center;
   border-radius: 0.8rem;
 
   @media (max-width: 1080px) {
