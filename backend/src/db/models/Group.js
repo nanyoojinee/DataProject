@@ -16,6 +16,8 @@ class Group {
   // 그룹 모집인원 확인 - 모집인원 이상 가입 제한용
   static async findTotNumOfMems(groupId) {
     const groupJoin = await GroupModel.findById({ _id: groupId });
+    console.log('groupJoin', groupJoin);
+    console.log('총몇명',groupJoin.totalNumOfMembers);
     return groupJoin; 
   }
 

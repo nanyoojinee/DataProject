@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { groupService } from '../services/groupService.js';
+import { groupJoinService } from '../services/groupJoinService.js';
 import { userAuthService } from '../services/userService.js';
 import { upload } from '../middlewares/imageUploadMiddleware.js';
 import { loginRequired } from '../middlewares/loginRequired.js';
@@ -15,7 +16,7 @@ groupRouter.post('/groups', loginRequired, imgupload, async (req, res, next) => 
   try {
     const groupOwnerId = req.currentUserId;
     const { title, totalNumOfMembers, createdAt, description } = req.body;
-    const thumbnail = req.file ? req.file.filename : null;
+    const thumbnail = req.file ? req.file.filename : undefined;
 
     //그룹 중복 생성 방지
     const isGroupexisted = await groupService.getGroupByOwnerId(groupOwnerId);
@@ -79,7 +80,8 @@ groupRouter.get('/groups/:groupId', async (req, res, next) => {
     const groupId = req.params.groupId;
     const myGroup = await groupService.getMyGroup(groupId);
     const members = await userAuthService.getMembers({ groupId });
-    res.status(200).json({ myGroup, members });
+    const membersCount = members.length;
+    res.status(200).json({ myGroup, members, membersCount });
     return;
   } catch (error) {
     next(error);
@@ -121,11 +123,8 @@ groupRouter.delete('/groups/:groupId/', loginRequired, async (req, res, next) =>
   try {
     const userId = req.currentUserId;
     const groupId = req.params.groupId;
-    //그룹장의 groupId도 삭제
-    const updatedUser = await userAuthService.deleteGroupId({ groupId, userId });
-
-    const result = await groupService.deleteGroup({ groupId });
-    res.status(200).send({ result, updatedUser });
+    const result = await groupService.deleteGroup({ groupId, userId });
+    res.status(200).send({ result });
     return;
   } catch (error) {
     next(error);

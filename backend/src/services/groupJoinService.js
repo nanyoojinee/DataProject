@@ -5,18 +5,28 @@ import { Group } from '../db/models/Group.js';
 class groupJoinService {
   // 유저의 그룹 가입
   static async groupJoin({ groupId, userId, state }) {
-    // 모집인원 다 찼을 때 가입 방지 
+    // 모집인원 다 찼을 때 가입 방지
     //그룹의 총 인원 검색
     const totMembers = await Group.findTotNumOfMems(groupId);
     const totalNums = totMembers.totalNumOfMembers;
-    console.log('총인원:',totalNums);
-    //그룹가입 인원 배열의 갯수 
+    //그룹가입 인원 배열의 갯수
     const members = await User.findGroupMembers({ groupId });
-    const membersCount =  members.length;
-    console.log('현재인원:',membersCount);
-    
+    const membersCount = members.length;
+
+    //그룹조인 테이블에서 해당 그룹Id를 가진 데이터수
+    const groupJoinData = await GroupJoin.findGroupMembers({ groupId });
+    const groupJoinDataCount = groupJoinData.length;
+    console.log(
+      '총인원:',
+      totalNums,
+      '현재인원:',
+      membersCount,
+      'groupJoin 총 인원:',
+      groupJoinDataCount,
+    );
+
     //같으면 err  -> 그룹원 모집 마감
-    if (totalNums == membersCount) {
+    if (totalNums == membersCount || totalNums == groupJoinDataCount + 1) {
       const errorMessage = '모집인원이 마감되었습니다ㅜㅜ';
       throw new Error(errorMessage);
     }
@@ -73,6 +83,19 @@ class groupJoinService {
       const errorMessage = 'Group 탈퇴: 해당 id를 가진 그룹이 없습니다. 다시 한 번 확인해 주세요.';
       throw new Error(errorMessage);
     }
+    return { status: 'ok' };
+  }
+  // 그룹 삭제로 모든 가입 멤버 데이터삭제
+  static async deleteData(groupId) {
+    console.log('groupId', groupId);
+    const isDataDeleted = await GroupJoin.deleteData(groupId);
+    console.log('isGroupDataDeleted', isDataDeleted);
+
+    // if (!isDataDeleted) {
+    //   const errorMessage =
+    //     '그룹조인데이터삭제: 해당 id를 가진 그룹이 없습니다. 다시 한 번 확인해 주세요.';
+    //   throw new Error(errorMessage);
+    // }
     return { status: 'ok' };
   }
 }

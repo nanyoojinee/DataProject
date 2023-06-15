@@ -83,9 +83,9 @@ class userAuthService {
       phone,
       address,
       addressDetail,
-      profileImg,
       groupId,
       errorMessage: null,
+      profileImg,
     };
     return loginUser;
   }
@@ -175,6 +175,12 @@ class userAuthService {
     const deleteGroupId = await User.deleteGroupId({ groupId, userId });
     return deleteGroupId;
   }
+  // // 그룹 삭제 시 멤버의 groupId값 삭제
+  // static async deleteMembersGroupId({ groupId }) {
+  //   const deleteGroupId = await User.deleteMembersGroupId({ groupId });
+  //   console.log('서비스쪽멤버user-groupId',deleteGroupId);
+  //   return deleteGroupId;
+  // }
 
   static async getUserActivityCount(userId, category) {
     const count = await ActivityModel.countDocuments({

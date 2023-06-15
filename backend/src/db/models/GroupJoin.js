@@ -19,6 +19,12 @@ class GroupJoin {
     });
     return group;
   }
+
+  // groupId로 찾기 
+  static async findGroupMembers({groupId}) {
+    const groupMembers = await GroupJoinModel.find({groupId});
+    return groupMembers;
+  }
   // 그룹 가입 승인 대기자 조회 - 관리자용
   static async findByGroupId({ groupId }) {
     const waitingList = await GroupJoinModel.find({ groupId: groupId, state: '대기' }).populate(
@@ -61,6 +67,11 @@ class GroupJoin {
     const deletedGroup = await GroupJoinModel.deleteOne({ userId });
     const isDataDeleted = deletedGroup.deletedCount === 1;
     return isDataDeleted;
+  }
+  // 그룹 삭제로 멤버들 모든 기록 삭제
+  static async deleteData({groupId}) {
+    const deletedGroup = await GroupJoinModel.deleteMany({ groupId });
+    return deletedGroup;
   }
 }
 

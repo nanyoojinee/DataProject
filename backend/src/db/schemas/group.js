@@ -25,6 +25,7 @@ const GroupSchema = new Schema(
     },
     thumbnail: {
       type: String,
+      default: '1686823001485.png',
     },
   },
   { strictPopulate: false },

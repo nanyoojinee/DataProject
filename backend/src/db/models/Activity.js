@@ -40,6 +40,12 @@ class Activity {
     return activity;
   }
 
+  // 그룹 탈퇴 시 활동 삭제
+  static async deleteByUserId({ userId }) {
+    const activity = await ActivityModel.deleteMany({ userId });
+    return activity;
+  }
+
   // 유저 활동 목록 조회
   static async findByUserId(userId, skip, limit) {
     const activities = await ActivityModel.find({ userId, state: '승인' })

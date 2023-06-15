@@ -15,8 +15,8 @@ userAuthRouter.post('/users', imgUpload, async (req, res, next) => {
     }
 
     // req (request) 에서 데이터 가져오기
-    const { userId, password, name, nickname, phone, address, addressDetail, profileImg } =
-      req.body;
+    const { userId, password, name, nickname, phone, address, addressDetail } = req.body;
+    const profileImg = req.file ? req.file.filename : undefined;
 
     const newUser = await userAuthService.addUser({
       userId,
@@ -26,7 +26,7 @@ userAuthRouter.post('/users', imgUpload, async (req, res, next) => {
       phone,
       address,
       addressDetail,
-      profileImg: req.file ? req.file.filename : '',
+      profileImg,
     });
 
     if (newUser.errorMessage) {

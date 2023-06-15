@@ -83,5 +83,18 @@ class User {
     }
     return true;
   }
+  //그룹 삭제 시 멤버의 groupId 삭제
+  static async deleteMembersGroupId({ groupId }) {
+    const filter = { groupId };
+    const update = { $set: { groupId: null } };
+    const option = { returnOriginal: false };
+
+    const updatedGroup = await UserModel.updateMany(filter, update, option);
+    console.log('updatedGroup', updatedGroup);
+    if (!updatedGroup) {
+      return false;
+    }
+    return true;
+  }
 }
 export { User };

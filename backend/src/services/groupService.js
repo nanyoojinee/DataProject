@@ -1,4 +1,6 @@
 import { Group } from '../db/models/Group.js';
+import { User } from '../db/models/User.js';
+import { GroupJoin } from '../db/models/GroupJoin.js';
 
 class groupService {
   // 그룹의 생성
@@ -51,11 +53,32 @@ class groupService {
     return { groups: filteredSearch, count };
   }
   //그룹 삭제
-  static async deleteGroup({ groupId }) {
-    const isDataDeleted = await Group.deleteById({ groupId });
+  static async deleteGroup({ groupId, userId }) {
+    const isGroupDataDeleted = await Group.deleteById({ groupId });
+    //그룹장의 groupId 삭제
+    const deleteGroupOwnerGroupId = await User.deleteGroupId({ groupId, userId });
+    //그룹멤버의 groupId 삭제
+    const deleteGroupId = await User.deleteMembersGroupId({ groupId });
+    // groupJoin 데이터 삭제
+    const isGroupJoinDataDeleted = await GroupJoin.deleteData({ groupId });
 
-    if (!isDataDeleted) {
-      const errorMessage = 'Group 삭제: 해당 id를 가진 그룹이 없습니다. 다시 한 번 확인해 주세요.';
+    if (!deleteGroupOwnerGroupId) {
+      const errorMessage =
+        '그룹오너삭제: 해당 id를 가진 그룹장이 없습니다.';
+      throw new Error(errorMessage);
+    }
+    if (!deleteGroupId) {
+      const errorMessage =
+        '멤버들 그룹아이디삭제: 해당 id를 가진 멤버가 없습니다.';
+      throw new Error(errorMessage);
+    }
+    if (!isGroupJoinDataDeleted) {
+      const errorMessage =
+        '그룹조인데이터삭제: 해당 id를 가진 데이터가 없습니다.';
+      throw new Error(errorMessage);
+    }
+    if (!isGroupDataDeleted) {
+      const errorMessage = 'Group 삭제: 해당 id를 가진 그룹이 없습니다.';
       throw new Error(errorMessage);
     }
     return { status: 'ok' };

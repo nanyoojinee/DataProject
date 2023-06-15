@@ -136,6 +136,17 @@ class activityService {
     }
   }
 
+  // 그룹 탈퇴 시 활동 삭제
+  static async deleteUserActivity({ userId }) {
+    const isDataDeleted = await Activity.deleteByUserId({ userId });
+
+    if (!isDataDeleted) {
+      const errorMessage = 'Activity 삭제: 해당 user의 활동이 없습니다. 다시 한 번 확인해 주세요.';
+      throw new Error(errorMessage);
+    }
+    return { status: 'ok' };
+  }
+
   // 유저 활동 목록 조회
   static async getActivities(userId, skip, limit) {
     try {
